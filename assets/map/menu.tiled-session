@@ -1,0 +1,119 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "battle.tmx",
+    "expandedProjectPaths": [
+    ],
+    "exportAsImage.drawTileGrid": false,
+    "file.lastUsedOpenFilter": "All Files (*)",
+    "fileStates": {
+        "": {
+            "scaleInDock": 1
+        },
+        "#dungeon_": {
+            "scaleInDock": 3
+        },
+        "battle.tmx": {
+            "scale": 1.5,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 204,
+                "y": 231.66666666666669
+            }
+        },
+        "battle.tmx#dungeonDecoration_0": {
+            "scaleInDock": 1
+        },
+        "battle.tmx#dungeon_": {
+            "scaleInDock": 1
+        },
+        "battle.tmx#dungeon_Transparent_walls": {
+            "scaleInDock": 1
+        },
+        "dungeon transparent.tsx": {
+            "scaleInDock": 2,
+            "scaleInEditor": 1
+        },
+        "dungeon walls transparent.tsx": {
+            "scaleInDock": 4
+        },
+        "dungeonDecoration_0.tsx": {
+            "scaleInDock": 2
+        },
+        "dungeon_.tsx": {
+            "scaleInDock": 3
+        },
+        "maze.tmx": {
+            "scale": 1.5,
+            "selectedLayer": 4,
+            "viewCenter": {
+                "x": 724.6666666666667,
+                "y": 232.3333333333333
+            }
+        },
+        "maze.tmx#dungeonDecoration_0": {
+            "scaleInDock": 1
+        },
+        "maze.tmx#dungeonDecoration_0 [blueCarpet]": {
+            "scaleInDock": 1
+        },
+        "maze.tmx#dungeonDecoration_0 [greenCarpet]": {
+            "scaleInDock": 1
+        },
+        "maze.tmx#dungeonDecoration_0 [redCarpet]": {
+            "scaleInDock": 1
+        },
+        "maze.tmx#dungeon_": {
+            "scaleInDock": 3
+        },
+        "maze.tmx#dungeon_Transparent_walls": {
+            "scaleInDock": 3
+        },
+        "menu.tmx": {
+            "scale": 1.73857421875,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 255.956861203168,
+                "y": 256.24445318204795
+            }
+        },
+        "menu.tmx#dungeonDecoration_0": {
+            "scaleInDock": 1
+        },
+        "menu.tmx#dungeon_": {
+            "scaleInDock": 1
+        }
+    },
+    "last.imagePath": "C:/Users/BOBBI/Downloads/dungeon_ v1.0/dungeon_ v1.0",
+    "last.worldFilePath": "C:/Users/BOBBI/OneDrive - Università degli Studi di Catania/progetto/assets/map",
+    "loadedWorlds": [
+        "C:/Users/BOBBI/OneDrive - Università degli Studi di Catania/progetto/assets/map/world.world"
+    ],
+    "map.height": 32,
+    "map.lastUsedFormat": "tmx",
+    "map.tileHeight": 16,
+    "map.tileWidth": 16,
+    "map.width": 32,
+    "openFiles": [
+        "maze.tmx",
+        "battle.tmx",
+        "menu.tmx"
+    ],
+    "project": "menu.tiled-project",
+    "recentFiles": [
+        "maze.tmx",
+        "menu.tmx",
+        "battle.tmx",
+        "dungeon transparent.tsx"
+    ],
+    "tileset.embedInMap": true,
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.tileSize": {
+        "height": 16,
+        "width": 16
+    },
+    "tileset.transparentColor": "#353540",
+    "tileset.useTransparentColor": false
+}
