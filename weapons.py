@@ -2,6 +2,7 @@ from random import randint
 import pygame
 from config import X_RATIO, Y_RATIO
 import objects as obj
+import textboxes as tbx
 
 class Weapon:
 	def __init__(
@@ -11,7 +12,7 @@ class Weapon:
 		damage : int, 
 		crit : int,
 		max_frames : int,
-		frame_mult : int = 4
+		frame_mult : int = 4,
 	):
 		self.name = name
 		self.type = type
@@ -34,10 +35,22 @@ class Weapon:
 		for i in range(self.max_frames):
 			for j in range(self.frame_mult):
 				k = (self.frame_mult * i) + j
-				self.left_attack.append(pygame.image.load(f"{self.path}/left_attack/{i%self.max_frames}.png"))
-				self.left_attack[k] = pygame.transform.scale_by(self.left_attack[k], self.scale_fact)
-				self.right_attack.append(pygame.image.load(f"{self.path}/right_attack/{i%self.max_frames}.png"))
-				self.right_attack[k] = pygame.transform.scale_by(self.right_attack[k], self.scale_fact)
+				self.left_attack.append(
+					pygame.image.load(
+						f"{self.path}/left_attack/{i%self.max_frames}.png"
+					)
+				)
+				self.left_attack[k] = pygame.transform.scale_by(
+					self.left_attack[k], self.scale_fact
+				)
+				self.right_attack.append(
+					pygame.image.load(
+						f"{self.path}/right_attack/{i%self.max_frames}.png"
+					)
+				)
+				self.right_attack[k] = pygame.transform.scale_by(
+					self.right_attack[k], self.scale_fact
+				)
 
 	def attackAnim(
 		self, 
@@ -58,7 +71,7 @@ class Weapon:
 	def setPos(
 		self, 
 		screen : pygame.Surface, 
-		pos : tuple[int, int]
+		pos : tuple[int, int],
 	):
 		self.rect.center = (pos[0]*X_RATIO, pos[1]*Y_RATIO)
 		screen.blit(self.static, self.rect)
@@ -73,15 +86,21 @@ class Weapon:
 		return damage
 	
 	def setBox(self):
-		self.box = obj.Box("weapon", (128, 48))
-		self.name_text = obj.Text(f"{self.name}", align = "center", font_size=9)
-		self.dmg_text = obj.Text(f"Dmg: {self.damage}", align = "center", font_size=9)
-		self.crit_text = obj.Text(f"Crt: {self.crit}%", align = "center", font_size=9)
+		self.box = tbx.Box("weapon", (128, 48))
+		self.name_text = tbx.Text(
+			f"{self.name}", align = "center", font_size=9
+		)
+		self.dmg_text = tbx.Text(
+			f"Dmg: {self.damage}", align = "center", font_size=9
+		)
+		self.crit_text = tbx.Text(
+			f"Crt: {self.crit}%", align = "center", font_size=9
+		)
 
 	def showBox(
 		self, 
 		screen : pygame.Surface, 
-		pos : tuple[int, int]
+		pos : tuple[int, int],
 	):
 		self.setBox()
 		self.box.show(screen, pos)
@@ -93,7 +112,7 @@ class Weapon:
 	def showStatic(
 		self,
 		screen : pygame.Surface,
-		pos : tuple[int, int]
+		pos : tuple[int, int],
 	):
 		self.rect.center = (pos[0]*X_RATIO, pos[1]*Y_RATIO)
 		screen.blit(self.static, self.rect)
@@ -115,24 +134,28 @@ class Spell(Weapon):
 
 	def setBox(self):
 		Weapon.setBox(self)
-		self.effect_text = obj.Text(f"Effetto: {self.effect}", align = "center")
-		self.mana_text = obj.Text(f"Mana: {self.mana}", align = "center")
+		self.effect_text = tbx.Text(
+			f"Effetto: {self.effect}", align = "center"
+		)
+		self.mana_text = tbx.Text(
+			f"Mana: {self.mana}", align = "center"
+		)
 
 	def showBox(
 		self, 
 		screen : pygame.Surface, 
-		pos : tuple[int, int]
+		pos : tuple[int, int],
 	):
 		Weapon.showBox(self, screen, pos)
 		self.effect_text.show(screen, pos)
 		self.mana_text.show(screen, pos)
 
-	def launch_spell(self, enemy):
-		phys_dmg = self.attack()
-		if self.effect in enemy.weakness:
-			return phys_dmg * 2
-		else:
-			return phys_dmg
+	# def launch_spell(self, enemy : ch.Enemy):
+	# 	phys_dmg = self.attack()
+	# 	if self.effect in enemy.weakness:
+	# 		return phys_dmg * 2
+	# 	else:
+	# 		return phys_dmg
 
 class Bow(Weapon):
 	def __init__(
@@ -141,10 +164,12 @@ class Bow(Weapon):
 		damage : int, 
 		crit : int,
 		max_frames : int,
-		frame_mult : int = 4
+		frame_mult : int = 4,
 	):
 		self.type = "bow"
-		Weapon.__init__(self, name, self.type, damage, crit, max_frames, frame_mult)
+		Weapon.__init__(
+			self, name, self.type, damage, crit, max_frames, frame_mult
+		)
 
 class Sword(Weapon):
 	def __init__(
@@ -156,7 +181,9 @@ class Sword(Weapon):
 		max_frames : int,
 		frame_mult : int = 4
 	):
-		Weapon.__init__(self, name, type, damage, crit, max_frames, frame_mult)
+		Weapon.__init__(
+			self, name, type, damage, crit, max_frames, frame_mult
+		)
 
 spade = {
 	"ascia" : Sword("Ascia vichinga", "axe", 20, 5, 4),

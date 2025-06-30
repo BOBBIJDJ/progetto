@@ -7,6 +7,7 @@ import characters as ch
 import player as pl
 import weapons as wp
 import objects as obj
+import textboxes as tbx
 # file con la classe per la gestione dei livelli
 import level as lv
 import copy
@@ -22,7 +23,9 @@ max_fps = 60
 # font = pygame.font.Font("assets/font/pixel.ttf")
 # creazione del rettangolo rappresentante la finestra di gioco da
 # usare come limite per gli altri oggetti
-CLAMP_RECT = pygame.Rect((16*X_RATIO),(16*Y_RATIO),WIDTH-(32*X_RATIO),HEIGHT-(32*Y_RATIO))
+CLAMP_RECT = pygame.Rect(
+    (16*X_RATIO),(16*Y_RATIO),WIDTH-(32*X_RATIO),HEIGHT-(32*Y_RATIO)
+)
 
 # inizializzazione del personaggio controllato dal giocatore
 player = pl.Player(screen, CLAMP_RECT, 4)
