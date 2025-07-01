@@ -5,22 +5,27 @@ import config as cfg
 X_RATIO = cfg.X_RATIO
 Y_RATIO = cfg.Y_RATIO
 
+TEXT_ALIGN = {
+    "left" : pygame.FONT_LEFT,
+    "center" : pygame.FONT_CENTER,
+    "right" : pygame.FONT_RIGHT,
+}
+
 class Box:
     def __init__(
         self,
         type : str,
         size : tuple[int,int],
-    ):
+    ) -> None:
         self.type = type
         self.size = size
         self.scale_fact = (
             (self.size[0]/254)*X_RATIO, (self.size[1]/105)*Y_RATIO
         )
-        
         self._setBox()
 
         
-    def _setBox(self):
+    def _setBox(self) -> None:
         if self.type == "inventory":
             self.box = pygame.image.load("assets/dialogue/inventory.png")
             self.box = pygame.transform.scale_by(self.box, (X_RATIO, Y_RATIO))
@@ -33,28 +38,23 @@ class Box:
         self, 
         screen : pygame.Surface, 
         pos : tuple[int, int],
-    ):
+    ) -> None:
         self.box_rect.center = (pos[0]*X_RATIO, pos[1]*Y_RATIO)
         screen.blit(self.box, self.box_rect)
 
 class Text:
 
     def __init__(
-            self,
-            text : str,
-            from_file : bool = False,
-            font_name : str = "pixel",
-            font_color : str = "white",
-            font_size : int =  10,
-            align : str = "left",
-            wrap : bool = False,
-            scale_fact : int | tuple[int, int] = (X_RATIO, Y_RATIO),
-    ):
-        text_align = {
-            "left" : pygame.FONT_LEFT,
-            "center" : pygame.FONT_CENTER,
-            "right" : pygame.FONT_RIGHT,
-        }
+        self,
+        text : str,
+        from_file : bool = False,
+        font_name : str = "pixel",
+        font_color : str = "white",
+        font_size : int =  10,
+        align : str = "left",
+        wrap : bool = False,
+        scale_fact : int | tuple[int, int] = (X_RATIO, Y_RATIO),
+    ) -> None:
         pygame.font.init()
         if from_file:
             self.path = text
@@ -62,7 +62,7 @@ class Text:
         else:
             self.text = text
         self.font = pygame.font.Font(f"assets/font/{font_name}.ttf")
-        self.font.align = text_align[align]
+        self.font.align = TEXT_ALIGN[align]
         self.font.point_size = font_size
         if wrap:
             self.surface = self.font.render(
@@ -74,7 +74,7 @@ class Text:
         self.rect = self.surface.get_rect()
 
 
-    def _setText(self):
+    def _setText(self) -> str:
         text_file = open(f"assets/dialogue/{self.path}.txt")
         text = text_file.read()
         text_file.close()
@@ -84,7 +84,7 @@ class Text:
         self,
         screen : pygame.Surface,
         pos : tuple[int, int],
-    ):
+    ) -> None:
         self.rect.center = (pos[0]*X_RATIO, pos[1]*Y_RATIO)
         screen.blit(self.surface, self.rect)
 
@@ -99,7 +99,7 @@ class TextBox(Box):
         font_color : str = "white",
         font_size : int = 10,
         align : str = "left",
-    ):
+    ) -> None:
         Box.__init__(self, type, size)
         self.text = Text(
             text_path, 
@@ -116,7 +116,7 @@ class TextBox(Box):
         self, 
         screen : pygame.Surface, 
         pos : tuple[int, int],
-    ):
+    ) -> None:
         Box.show(self, screen, pos)
         self.text.rect.center = (pos[0]*X_RATIO, pos[1]*Y_RATIO)
         screen.blit(self.text.surface, self.text.rect)

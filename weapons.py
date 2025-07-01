@@ -18,7 +18,7 @@ class Weapon:
 		crit : int,
 		max_frames : int,
 		frame_mult : int = 4,
-	):
+	) -> None:
 		self.name = name
 		self.type = type
 		self.scale_fact = (1*X_RATIO, 1*Y_RATIO)
@@ -31,7 +31,7 @@ class Weapon:
 		self.attacked = False
 		self.current_frame = 0
 	
-	def setSprites(self):
+	def setSprites(self) -> None:
 		self.static = pygame.image.load(f"{self.path}/static/static.png")
 		self.static = pygame.transform.scale_by(self.static, self.scale_fact)
 		self.rect = self.static.get_rect()
@@ -61,7 +61,7 @@ class Weapon:
 		self, 
 		screen : pygame.Surface, 
 		rot : str, 
-	):
+	) -> None:
 		if self.current_frame < (self.max_frames*self.frame_mult):
 			if rot == "left":
 				self.current_anim = self.left_attack
@@ -77,11 +77,11 @@ class Weapon:
 		self, 
 		screen : pygame.Surface, 
 		pos : tuple[int, int],
-	):
+	) -> None:
 		self.rect.center = (pos[0]*X_RATIO, pos[1]*Y_RATIO)
 		screen.blit(self.static, self.rect)
 
-	def attack(self):
+	def attack(self) -> int:
 		crit_prob = randint(1,100)
 		if crit_prob <= self.crit:
 			damage = self.damage * 2
@@ -90,7 +90,7 @@ class Weapon:
 		self.attacked = True
 		return damage
 	
-	def setBox(self):
+	def setBox(self) -> None:
 		self.box = tbx.Box("weapon", (128, 48))
 		self.name_text = tbx.Text(
 			f"{self.name}", align = "center", font_size=9
@@ -106,7 +106,7 @@ class Weapon:
 		self, 
 		screen : pygame.Surface, 
 		pos : tuple[int, int],
-	):
+	) -> None:
 		self.setBox()
 		self.box.show(screen, pos)
 		self.showStatic(screen, (pos[0] - 48, pos[1]))
@@ -118,7 +118,7 @@ class Weapon:
 		self,
 		screen : pygame.Surface,
 		pos : tuple[int, int],
-	):
+	) -> None:
 		self.rect.center = (pos[0]*X_RATIO, pos[1]*Y_RATIO)
 		screen.blit(self.static, self.rect)
 
@@ -132,12 +132,12 @@ class Spell(Weapon):
 		effect : str, 
 		mana : int,
 		max_frames : int, 
-	):
+	) -> None:
 		Weapon.__init__(self, name, type, damage, crit, max_frames)
 		self.effect = effect
 		self.mana = mana
 
-	def setBox(self):
+	def setBox(self) -> None:
 		Weapon.setBox(self)
 		self.effect_text = tbx.Text(
 			f"Effetto: {self.effect}", align = "center"
@@ -150,7 +150,7 @@ class Spell(Weapon):
 		self, 
 		screen : pygame.Surface, 
 		pos : tuple[int, int],
-	):
+	) -> None:
 		Weapon.showBox(self, screen, pos)
 		self.effect_text.show(screen, pos)
 		self.mana_text.show(screen, pos)
@@ -170,7 +170,7 @@ class Bow(Weapon):
 		crit : int,
 		max_frames : int,
 		frame_mult : int = 4,
-	):
+	) -> None:
 		self.type = "bow"
 		Weapon.__init__(
 			self, name, self.type, damage, crit, max_frames, frame_mult
@@ -185,7 +185,7 @@ class Sword(Weapon):
 		crit : int, 
 		max_frames : int,
 		frame_mult : int = 4
-	):
+	) -> None:
 		Weapon.__init__(
 			self, name, type, damage, crit, max_frames, frame_mult
 		)

@@ -40,7 +40,7 @@ class Level:
             list[dict[str, tbx.TextBox | tuple[int, int]]]) = [],
         has_fog : bool = False,
         is_menu : bool = False,
-    ):
+    ) -> None:
         self.name = name
         self.path = path
         self.scale_fact = (1*X_RATIO, 1*Y_RATIO)
@@ -59,7 +59,7 @@ class Level:
             self._setFog()
         
 
-    def _setBoundMask(self):
+    def _setBoundMask(self) -> None:
         mask_surface = pygame.image.load(f"{self.path}/mask.png")
         mask_surface = pygame.transform.scale_by(mask_surface, self.scale_fact)
         self.mask = pygame.mask.from_surface(mask_surface)
@@ -68,14 +68,14 @@ class Level:
         self, 
         player : pl.Player, 
         player_pos : tuple[int, int],
-    ):
+    ) -> bool:
         overlap = self.mask.overlap(player.mask, player_pos)
         if overlap is None:
             return False
         else:
             return True
     
-    def _setFog(self):
+    def _setFog(self) -> None:
         self.fog_bg = pygame.image.load("assets/fog/fog.png")
         self.fog_bg = pygame.transform.scale_by(self.fog_bg, self.scale_fact)
         fog_circle = pygame.image.load("assets/fog/circle.png")
@@ -86,7 +86,7 @@ class Level:
         self, 
         screen : pygame.Surface, 
         pos : tuple[int, int],
-    ):
+    ) -> None:
         self.fog_mask = pygame.mask.from_surface(self.fog_bg)
         self.fog_mask.erase(self.fog_circle_mask, (pos[0] - 64, pos[1] - 64))
         self.fog_mask.invert()
@@ -98,7 +98,7 @@ class Level:
         self, 
         screen : pygame.Surface, 
         player : pl.Player,
-    ):
+    ) -> None:
         if self.is_menu:
             self.characters = self.characters_ref
             self.objects = self.objects_ref
@@ -131,7 +131,7 @@ class Level:
         self, 
         screen : pygame.Surface, 
         frame : int,
-    ):
+    ) -> None:
         screen.blit(self.bg, self.bg_rect)
 
         for character in self.characters:
@@ -145,7 +145,7 @@ class Level:
         player : pl.Player, 
         clock : pygame.Clock, 
         max_fps : int,
-    ):
+    ) -> None:
         self._setLevel(screen, player)
         frame = 0
         level_passed = False
@@ -222,8 +222,8 @@ class Level:
         player : pl.Player, 
         enemy : ch.Enemy, 
         clock : pygame.Clock, 
-        max_fps : int
-    ):
+        max_fps : int,
+    ) -> None:
         frame = 0
         victory = False
         while (not self.quit) and (not victory):
@@ -240,8 +240,8 @@ class Level:
     def _chooseClass(
         self,  
         player : pl.Player, 
-        keys : list[int]
-    ):
+        keys : list[int],
+    ) -> bool:
         for character in self.characters:
             if (player.rect.colliderect(character["type"].rect) 
                 and (player.name != character["type"].name) 
@@ -249,3 +249,4 @@ class Level:
             ):
                 player.setPlayerClass(character["type"])
                 return True
+        return False

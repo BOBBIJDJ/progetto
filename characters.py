@@ -16,7 +16,7 @@ class Character:
 		type : str,
 		max_frames : int,
 		frame_mult : int = 4,
-	):
+	) -> None:
 		self.name = name
 		self.type = type
 		self.path = f"assets/sprites/{self.type}"
@@ -27,7 +27,7 @@ class Character:
 		self._setSprites()
 		self.rect = self.static_right.get_rect()
 
-	def _setSprites(self):
+	def _setSprites(self) -> None:
 		self.static_right = pygame.image.load(
 			f"{self.path}/static/static_r.png"
 		)
@@ -69,7 +69,7 @@ class Character:
 		screen : pygame.Surface, 
 		pos : tuple[int, int], 
 		rot : str,
-	):
+	) -> None:
 		if rot == "right":
 			self.current_rot = self.static_right
 		else:
@@ -82,7 +82,7 @@ class Character:
 		screen : pygame.Surface, 
 		rot : str, 
 		frame : int,
-	):
+	) -> None:
 		if rot == "right":
 			self.current_anim = self.right_idle
 		else:
@@ -100,7 +100,7 @@ class NPC(Character):
 		type : str, 
 		max_frames : int,
 		frame_mult : int = 4,
-	):
+	) -> None:
 		Character.__init__(self, name, type, max_frames, frame_mult)
 		self.collision_type = "nobattle"
 
@@ -117,7 +117,7 @@ class Enemy(Character):
 		weakness : list[str],
 		max_frames : int,
 		frame_mult : int = 4,
-	):
+	) -> None:
 		Character.__init__(self, name, type, max_frames, frame_mult)
 		self.max_hp = max_hp
 		self.max_mana = max_mana
@@ -143,27 +143,13 @@ class Subplayer(Character):
 		spells : list[wp.Spell] = [],
 		items : list[obj.Item] = [],
 		frame_mult : int = 4,
-	):
+	) -> None:
 		Character.__init__(self, name, type, max_frames, frame_mult)
 		self.max_hp = max_hp
 		self.max_mana = max_mana
 		self.weapons = weapons
 		self.spells = spells
 		self.items = items
-
-# nemico = Enemy("Mostro", 150, {"fire", "ice"}, 15, 10)
-# print(nemico)
-
-# mago = Character("Diego", 200, {"water"}, 20, 5)
-# print(mago)
-
-# knight = Subplayer("Cavaliere errante", "knight", "assets/knight1", 3, 8)
-# knight.setWeapons()
-#ecc
-
-# player_classes = [
-# 	knight
-# ]
 
 # orc = NPC("Orco ripugnante", "orc", 4)
 mage = Subplayer(

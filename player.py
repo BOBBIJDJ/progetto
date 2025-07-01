@@ -19,7 +19,7 @@ class Player:
 		self, 
 		screen : pygame.Surface, 
 		max_frames : int,
-	):
+	) -> None:
 		self.name = "???"
 		self.path = "assets/sprites/default"
 		self.scale_factor = (1*X_RATIO, 1*Y_RATIO)
@@ -41,7 +41,7 @@ class Player:
 		self, 
 		screen : pygame.Surface, 
 		pos : tuple[int, int],
-	):
+	) -> None:
 		tmp_rect = copy.deepcopy(self.rect)
 		tmp_rect.center = (pos[0]*X_RATIO, pos[1]*Y_RATIO)
 		screen.blit(self.static_right, tmp_rect)
@@ -49,7 +49,7 @@ class Player:
 	def restore(
 		self, 
 		potion : obj.Item,
-	):
+	) -> None:
 		if potion["type"] == "hp":
 			if potion["value"] >= self.max_hp-self.hp:
 				self.hp = self.max_hp
@@ -61,11 +61,11 @@ class Player:
 			else:
 				self.mana += potion["value"]
 
-	def _setMask(self):
+	def _setMask(self) -> None:
 		self.left_mask = pygame.mask.from_surface(self.static_left)
 		self.right_mask = pygame.mask.from_surface(self.static_right)
 
-	def _setSprites(self):
+	def _setSprites(self) -> None:
 		self.static_right = pygame.image.load(
 			f"{self.path}/static/static_r.png"
 		)
@@ -132,7 +132,7 @@ class Player:
 	def setPlayerClass(
 		self, 
 		player_class : ch.Subplayer,
-	):
+	) -> None:
 		self.name = player_class.name
 		self.type = player_class.type
 		self.path = player_class.path
@@ -152,35 +152,35 @@ class Player:
 		self, 
 		key : str, 
 		weapon : wp.Weapon,
-	):
+	) -> None:
 		self.weapons[key] = weapon
 	
 	def addSpell(
 		self, 
 		key : str, 
 		spell : wp.Spell,
-	):
+	) -> None:
 		self.spells[key] = spell
 
 	def addItem(
 		self,
 		key : str,
 		item : obj.Item,
-	):
+	) -> None:
 		self.items[key] = item
 
 	def setPos(
 		self, 
 		screen : pygame.Surface, 
 		pos : tuple[int, int],
-	):
+	) -> None:
 		self.rect.center = pos
 		screen.blit(self.static, self.rect)
 
 	def _setRotation(
 		self, 
 		rot : str,
-	):
+	) -> None:
 		if rot == "left":
 			self.current_walk = self.left_walk
 			self.current_idle = self.left_idle
@@ -195,11 +195,11 @@ class Player:
 	def idle(
 		self, 
 		frame : int,
-	):
+	) -> None:
 		anim_frame = frame % (self.max_frames * self.frame_mult)
 		self.screen.blit(self.current_idle[anim_frame], self.rect)
 
-	def _normalize_movement(self):
+	def _normalize_movement(self) -> None:
 		norm = sqrt(sum((comp**2) for comp in self.movement))
 		if norm != 0:
 			self.movement = [
@@ -208,7 +208,7 @@ class Player:
 	def getNextPos(
 		self, 
 		keys : list[int],
-	):
+	) -> tuple[int, int]:
 		self.movement = [0,0]
 		if keys[pygame.K_a]:
 			self._setRotation("left")
@@ -230,7 +230,7 @@ class Player:
 	def move(
 		self, 
 		frame : int,
-	):
+	) -> None:
 		if self.movement == [0,0]:
 			self.idle(frame)
 			return
@@ -242,14 +242,14 @@ class Player:
 
 
 class Inventory:
-	def __init__(self, player : Player):
+	def __init__(self, player : Player) -> None:
 		self.box = tbx.Box("inventory", (475, 197))
 		self.player = player
 		self.weapons_text = tbx.Text("Armi", align = "center")
 		self.spells_text = tbx.Text("Incantesimi", align = "center")
 		self._update()
 
-	def _update(self):
+	def _update(self) -> None:
 		self.name = tbx.Text(
 			f"{self.player.name}", 
 			align = "center",
@@ -266,7 +266,7 @@ class Inventory:
 	def show(
 		self, 
 		screen : pygame.Surface,
-	):
+	) -> None:
 		self._update()
 		self.box.show(screen, (256, 256))
 		self.player.showStatic(screen, (73, 113))

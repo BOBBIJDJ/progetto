@@ -11,7 +11,7 @@ class Object:
         name : str, 
         path : str, 
         has_collision : bool = False,
-    ):
+    ) -> None:
         self.name = name
         self.path = path
         self.has_collision = has_collision
@@ -25,14 +25,14 @@ class Object:
         self, 
         screen : pygame.Surface, 
         pos : tuple[int, int],
-    ):
+    ) -> None:
         self.rect.center = pos
         screen.blit(self.current, self.rect)
     
     def show(
         self, 
         screen : pygame.Surface,
-    ):
+    ) -> None:
         screen.blit(self.current, self.rect)
 
     def collision(self):
@@ -45,7 +45,7 @@ class Chest(Object):
     def __init__(
         self, 
         items : list[Item] = [],
-    ):
+    ) -> None:
         path = "assets/objects/chest"
         name = "chest"
         Object.__init__(self, name, path, has_collision = True)
@@ -53,10 +53,10 @@ class Chest(Object):
         self.opened = pygame.image.load(f"{self.path}/open.png")
         self.opened = pygame.transform.scale_by(self.opened, self.scale_fact)
 
-    def _toOpen(self):
+    def _toOpen(self) -> None:
         self.current = self.opened
 
-    def collision(self):
+    def collision(self) -> None:
         self.has_collision = False
         self._toOpen()
         # dà al giocatore un deterimanto oggetto
