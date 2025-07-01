@@ -1,8 +1,12 @@
 from random import randint
 import pygame
-from config import X_RATIO, Y_RATIO
+import config as cfg
+# from config import X_RATIO, Y_RATIO
 import objects as obj
 import textboxes as tbx
+
+X_RATIO = cfg.X_RATIO
+Y_RATIO = cfg.Y_RATIO
 
 class Weapon:
 	def __init__(

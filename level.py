@@ -1,11 +1,14 @@
 import pygame
+import copy
+import config as cfg
 import player as pl
 import characters as ch
 import weapons as wp
 import objects as obj
 import textboxes as tbx
-import copy
-from config import X_RATIO, Y_RATIO
+
+X_RATIO = cfg.X_RATIO
+Y_RATIO = cfg.Y_RATIO
 
 class Level:
     '''

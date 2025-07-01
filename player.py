@@ -1,11 +1,15 @@
 import pygame
 import copy
+import config as cfg
 import characters as ch
 import objects as obj
 import textboxes as tbx
 import weapons as wp
 from math import sqrt
-from config import MAX_RATIO, X_RATIO, Y_RATIO
+
+X_RATIO = cfg.X_RATIO
+Y_RATIO = cfg.Y_RATIO
+MAX_RATIO = cfg.MAX_RATIO
 	
 class Player:
 	
