@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "battle.tmx",
+    "activeFile": "maze.tmx",
     "expandedProjectPaths": [
     ],
     "exportAsImage.drawTileGrid": false,
@@ -19,7 +19,7 @@
             "scale": 1.5,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 204,
+                "x": -251.99999999999994,
                 "y": 231.66666666666669
             }
         },
@@ -30,7 +30,7 @@
             "scaleInDock": 1
         },
         "battle.tmx#dungeon_Transparent_walls": {
-            "scaleInDock": 1
+            "scaleInDock": 3
         },
         "dungeon transparent.tsx": {
             "scaleInDock": 2,
@@ -47,10 +47,10 @@
         },
         "maze.tmx": {
             "scale": 1.5,
-            "selectedLayer": 4,
+            "selectedLayer": 5,
             "viewCenter": {
-                "x": 724.6666666666667,
-                "y": 232.3333333333333
+                "x": 260,
+                "y": 231.66666666666669
             }
         },
         "maze.tmx#dungeonDecoration_0": {
@@ -75,8 +75,8 @@
             "scale": 1.73857421875,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 255.956861203168,
-                "y": 256.24445318204795
+                "x": 307.14823344380164,
+                "y": 255.95686120316805
             }
         },
         "menu.tmx#dungeonDecoration_0": {
@@ -103,9 +103,9 @@
     ],
     "project": "menu.tiled-project",
     "recentFiles": [
-        "maze.tmx",
         "menu.tmx",
         "battle.tmx",
+        "maze.tmx",
         "dungeon transparent.tsx"
     ],
     "tileset.embedInMap": true,

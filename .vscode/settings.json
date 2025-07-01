@@ -2,5 +2,9 @@
     "files.exclude": {
         "__pycache__": true,
         "**/.git": false
-    }
+    },
+    "editor.rulers": [
+        72,
+        79
+    ]
 }
