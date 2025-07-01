@@ -34,7 +34,6 @@ class Level:
         dialogue_box_ref : (
             list[dict[str, tbx.TextBox | tuple[int, int]]]) = [],
         has_fog : bool = False,
-        has_bound_mask : bool = False,
         is_menu : bool = False,
     ):
         self.name = name
@@ -50,11 +49,10 @@ class Level:
         self.passed = False
         self.is_menu = is_menu
         self.has_fog = has_fog
+        self._setBoundMask()
         if self.has_fog:
             self._setFog()
-        self.has_bound_mask = has_bound_mask
-        if self.has_bound_mask:
-            self._setBoundMask()
+        
 
     def _setBoundMask(self):
         mask_surface = pygame.image.load(f"{self.path}/mask.png")
@@ -67,10 +65,10 @@ class Level:
         player_pos : tuple[int, int],
     ):
         overlap = self.mask.overlap(player.mask, player_pos)
-        if overlap:
-            return True
-        else:
+        if overlap is None:
             return False
+        else:
+            return True
     
     def _setFog(self):
         self.fog_bg = pygame.image.load("assets/fog/fog.png")
@@ -165,8 +163,7 @@ class Level:
             player_next_pos = player.getNextPos(keys)
 
             if (in_inventory 
-                or (self.has_bound_mask 
-                    and self._doesBoundMaskOverlap(player, player_next_pos))
+                or self._doesBoundMaskOverlap(player, player_next_pos)
                 ):
                 player.idle(frame)
             else:
@@ -282,36 +279,35 @@ levels = [
         "Maze", 
         "assets/levels/maze", 
         start_pos = (256, 480), 
-        has_fog = False, 
-        has_bound_mask = True,
-        characters_ref = [
-            {
-                "type" : copy.deepcopy(ch.knight), 
-                "pos" : (256, 240), 
-                "rot" : "left",
-            },
-            {
-                "type" : copy.deepcopy(ch.mage), 
-                "pos" : (336,240), 
-                "rot" : "left",
-            },
-            {
-                "type" : copy.deepcopy(ch.archer), 
-                "pos" : (176, 240), 
-                "rot" : "left",
-            },
-        ],
+        has_fog = False,
+        # characters_ref = [
+        #     {
+        #         "type" : copy.deepcopy(ch.knight), 
+        #         "pos" : (256, 240), 
+        #         "rot" : "left",
+        #     },
+        #     {
+        #         "type" : copy.deepcopy(ch.mage), 
+        #         "pos" : (336,240), 
+        #         "rot" : "left",
+        #     },
+        #     {
+        #         "type" : copy.deepcopy(ch.archer), 
+        #         "pos" : (176, 240), 
+        #         "rot" : "left",
+        #     },
+        # ],
         objects_ref = [
             {
                 "type" : copy.deepcopy(obj.chest), 
                 "pos" : (400, 400),
             },
         ],
-        dialogue_box_ref = [
-            {
-                "box" : tbx.test_dialogue, 
-                "pos" : (256,256),
-            },
-        ],
+        # dialogue_box_ref = [
+        #     {
+        #         "box" : tbx.test_dialogue, 
+        #         "pos" : (256,256),
+        #     },
+        # ],
     ),
 ]

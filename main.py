@@ -23,12 +23,9 @@ max_fps = 60
 # font = pygame.font.Font("assets/font/pixel.ttf")
 # creazione del rettangolo rappresentante la finestra di gioco da
 # usare come limite per gli altri oggetti
-CLAMP_RECT = pygame.Rect(
-    (16*X_RATIO),(16*Y_RATIO),WIDTH-(32*X_RATIO),HEIGHT-(32*Y_RATIO)
-)
 
 # inizializzazione del personaggio controllato dal giocatore
-player = pl.Player(screen, CLAMP_RECT, 4)
+player = pl.Player(screen, 4)
 
 # text = font.render("Start", False, "white")
 # text_rect = text.get_rect()

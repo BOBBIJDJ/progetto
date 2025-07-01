@@ -12,7 +12,6 @@ class Player:
 	def __init__(
 		self, 
 		screen : pygame.Surface, 
-		clamp_window : pygame.Rect, 
 		max_frames : int,
 	):
 		self.name = "???"
@@ -20,7 +19,6 @@ class Player:
 		self.scale_factor = (1*X_RATIO, 1*Y_RATIO)
 		self.walk_speed = 2*MAX_RATIO
 		self.screen = screen
-		self.win_clamp = clamp_window
 		self.max_frames = max_frames
 		self.weapons = list()
 		self.spells = list()
@@ -193,7 +191,6 @@ class Player:
 		frame : int,
 	):
 		anim_frame = frame % (self.max_frames * self.frame_mult)
-		self.rect = self.rect.clamp(self.win_clamp)
 		self.screen.blit(self.current_idle[anim_frame], self.rect)
 
 	def _normalize_movement(self):
@@ -235,7 +232,6 @@ class Player:
 		anim_frame = frame % (self.max_frames * self.frame_mult)
 
 		self.rect = self.rect.move(self.movement)
-		self.rect = self.rect.clamp(self.win_clamp)
 		self.screen.blit(self.current_walk[anim_frame], self.rect)
 
 
