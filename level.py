@@ -1,11 +1,16 @@
+import copy
+
 import pygame
+
+import config as cfg
 import player as pl
 import characters as ch
 import weapons as wp
 import objects as obj
 import textboxes as tbx
-import copy
-from config import X_RATIO, Y_RATIO
+
+X_RATIO = cfg.X_RATIO
+Y_RATIO = cfg.Y_RATIO
 
 class Level:
     '''
@@ -43,8 +48,8 @@ class Level:
         self.bg = pygame.transform.scale_by(self.bg, self.scale_fact)
         self.bg_rect = self.bg.get_rect()
         self.player_start_pos = start_pos
-        self.characters_ref = characters_ref # lista di dict: [{NPC1, (x,y), rot}, {NPC2, (x,y), rot}, ...]
-        self.objects_ref = objects_ref # lista di dict: [{obj1, (x,y)}, {obj2, (x,y)}, ...] 
+        self.characters_ref = characters_ref # [{"type" : NPC1, "pos" : (x,y), "rot" : rot}, ...]
+        self.objects_ref = objects_ref # [{"type" : obj1, "pos" : (x,y)}, ...] 
         self.dialogue_boxes_ref = dialogue_box_ref
         self.passed = False
         self.is_menu = is_menu
@@ -94,9 +99,14 @@ class Level:
         screen : pygame.Surface, 
         player : pl.Player,
     ):
-        self.characters = copy.deepcopy(self.characters_ref)
-        self.objects = copy.deepcopy(self.objects_ref)
-        self.dialogue_boxes = self.dialogue_boxes_ref
+        if self.is_menu:
+            self.characters = self.characters_ref
+            self.objects = self.objects_ref
+            self.dialogue_boxes = self.dialogue_boxes_ref
+        else:
+            self.characters = copy.deepcopy(self.characters_ref)
+            self.objects = copy.deepcopy(self.objects_ref)
+            self.dialogue_boxes = copy.deepcopy(self.dialogue_boxes_ref)
         screen.blit(self.bg, self.bg_rect)
         player.setPos(
             screen,
@@ -203,6 +213,7 @@ class Level:
             pygame.display.flip()
             frame += 1
             clock.tick(max_fps)
+            
         if not self.quit:
             self.passed = True
 
@@ -238,76 +249,3 @@ class Level:
             ):
                 player.setPlayerClass(character["type"])
                 return True
-
-# class Menu(Level):
-#     def __init__(
-#         self, 
-#         name : str,
-#         path : str, 
-#         win_rect : pygame.Rect, 
-#         scale_fact : int, 
-#         player_classes : list[ch.Subplayer]
-#     ):
-#         Level.__init__(self, name, path, win_rect, scale_fact, characters_ref = player_classes)
-#         self.player_start_pos = (32, 32)
-#         self.is_menu = True
-levels = [ 
-    Level(
-        "Start Menu", 
-        "assets/levels/menu", 
-        start_pos = (32,32), 
-        is_menu = True, 
-        characters_ref = [
-            {
-                "type" : copy.deepcopy(ch.knight), 
-                "pos" : (256, 240), 
-                "rot" : "left",
-            },
-            {
-                "type" : copy.deepcopy(ch.mage), 
-                "pos" : (336,240), 
-                "rot" : "left",
-            },
-            {
-                "type" : copy.deepcopy(ch.archer), 
-                "pos" : (176, 240), 
-                "rot" : "left",
-            },
-        ],
-    ),
-    Level(
-        "Maze", 
-        "assets/levels/maze", 
-        start_pos = (256, 480), 
-        has_fog = False,
-        # characters_ref = [
-        #     {
-        #         "type" : copy.deepcopy(ch.knight), 
-        #         "pos" : (256, 240), 
-        #         "rot" : "left",
-        #     },
-        #     {
-        #         "type" : copy.deepcopy(ch.mage), 
-        #         "pos" : (336,240), 
-        #         "rot" : "left",
-        #     },
-        #     {
-        #         "type" : copy.deepcopy(ch.archer), 
-        #         "pos" : (176, 240), 
-        #         "rot" : "left",
-        #     },
-        # ],
-        objects_ref = [
-            {
-                "type" : copy.deepcopy(obj.chest), 
-                "pos" : (400, 400),
-            },
-        ],
-        # dialogue_box_ref = [
-        #     {
-        #         "box" : tbx.test_dialogue, 
-        #         "pos" : (256,256),
-        #     },
-        # ],
-    ),
-]

@@ -1,8 +1,13 @@
-import pygame
 import copy
+
+import pygame
+
+import config as cfg
 import weapons as wp
 import objects as obj
-from config import X_RATIO, Y_RATIO
+
+X_RATIO = cfg.X_RATIO
+Y_RATIO = cfg.Y_RATIO
 
 class Character:
 	def __init__(

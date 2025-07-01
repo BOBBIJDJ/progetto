@@ -1,5 +1,9 @@
 import pygame
-from config import X_RATIO, Y_RATIO
+
+import config as cfg
+
+X_RATIO = cfg.X_RATIO
+Y_RATIO = cfg.Y_RATIO
 
 class Box:
     def __init__(
