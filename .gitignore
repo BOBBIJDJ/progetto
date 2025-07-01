@@ -1,3 +1,5 @@
+.vscode/launch.json
+.vscode/settings.json
 assets/ecc/dungeonSprites_ v1.3.zip
 assets/ecc/dungeonSprites_ v1.4.zip
 assets/ecc/dungeonSprites_ v1.5.zip
@@ -1688,3 +1690,16 @@ assets/ecc/soldier/right_walk/6.png
 assets/ecc/soldier/right_walk/7.png
 assets/ecc/soldier/static/static.png
 assets/ecc/inventory.xcf
+__pycache__/characters.cpython-313.pyc
+__pycache__/config.cpython-313.pyc
+__pycache__/enemies.cpython-38.pyc
+__pycache__/enemies.cpython-310.pyc
+__pycache__/enemies.cpython-313.pyc
+__pycache__/level.cpython-313.pyc
+__pycache__/objects.cpython-313.pyc
+__pycache__/player.cpython-310.pyc
+__pycache__/player.cpython-313.pyc
+__pycache__/textboxes.cpython-313.pyc
+__pycache__/weapons.cpython-38.pyc
+__pycache__/weapons.cpython-310.pyc
+__pycache__/weapons.cpython-313.pyc
