@@ -1,7 +1,8 @@
 from random import randint
+
 import pygame
+
 import config as cfg
-# from config import X_RATIO, Y_RATIO
 import objects as obj
 import textboxes as tbx
 

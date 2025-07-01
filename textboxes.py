@@ -1,4 +1,5 @@
 import pygame
+
 import config as cfg
 
 X_RATIO = cfg.X_RATIO

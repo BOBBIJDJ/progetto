@@ -12,9 +12,6 @@ import level as lv
 
 SIZE = cfg.SIZE
 
-# config = cfg.Config()
-
-
 # inizializzazione della finestra di gioco
 pygame.init()
 screen = pygame.display.set_mode(SIZE)

@@ -1,5 +1,7 @@
-import pygame
 import copy
+
+import pygame
+
 import config as cfg
 import weapons as wp
 import objects as obj

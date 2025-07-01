@@ -1,11 +1,13 @@
-import pygame
 import copy
+from math import sqrt
+
+import pygame
+
 import config as cfg
 import characters as ch
 import objects as obj
 import textboxes as tbx
 import weapons as wp
-from math import sqrt
 
 X_RATIO = cfg.X_RATIO
 Y_RATIO = cfg.Y_RATIO
