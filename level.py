@@ -8,14 +8,31 @@ import copy
 from config import X_RATIO, Y_RATIO
 
 class Level:
+    '''
+    Una classe per rappresentare i livelli del gioco.
+
+    Attributi
+    ---------
+    passed -> bool:
+        stato di superamento del livello
+    
+    Metodi
+    ------
+    playLevel(screen, player, clock, max_fps) -> :
+        imposta il livello e lo riproduce con un sub-gameloop
+
+    '''
     def __init__(
         self, 
         name : str, 
         path : str,
         start_pos : tuple[int,int] = (256, 256), 
-        characters_ref : list[dict[str, ch.Character | tuple[int, int] | str]] = [], 
-        objects_ref : list[dict[str, obj.Object | tuple[int,int]]] = [],
-        dialogue_box_ref : list[dict[str, tbx.TextBox | tuple[int, int]]] = [],
+        characters_ref : (
+            list[dict[str, ch.Character | tuple[int, int] | str]]) = [], 
+        objects_ref : (
+            list[dict[str, obj.Object | tuple[int,int]]]) = [],
+        dialogue_box_ref : (
+            list[dict[str, tbx.TextBox | tuple[int, int]]]) = [],
         has_fog : bool = False,
         has_bound_mask : bool = False,
         is_menu : bool = False,
@@ -34,17 +51,17 @@ class Level:
         self.is_menu = is_menu
         self.has_fog = has_fog
         if self.has_fog:
-            self.setFog()
+            self._setFog()
         self.has_bound_mask = has_bound_mask
         if self.has_bound_mask:
-            self.setBoundMask()
+            self._setBoundMask()
 
-    def setBoundMask(self):
+    def _setBoundMask(self):
         mask_surface = pygame.image.load(f"{self.path}/mask.png")
         mask_surface = pygame.transform.scale_by(mask_surface, self.scale_fact)
         self.mask = pygame.mask.from_surface(mask_surface)
 
-    def doesBoundMaskOverlap(
+    def _doesBoundMaskOverlap(
         self, 
         player : pl.Player, 
         player_pos : tuple[int, int],
@@ -55,14 +72,14 @@ class Level:
         else:
             return False
     
-    def setFog(self):
+    def _setFog(self):
         self.fog_bg = pygame.image.load("assets/fog/fog.png")
         self.fog_bg = pygame.transform.scale_by(self.fog_bg, self.scale_fact)
         fog_circle = pygame.image.load("assets/fog/circle.png")
         fog_circle = pygame.transform.scale_by(fog_circle, self.scale_fact)
         self.fog_circle_mask = pygame.mask.from_surface(fog_circle)
 
-    def setFogPos(
+    def _setFogPos(
         self, 
         screen : pygame.Surface, 
         pos : tuple[int, int],
@@ -74,7 +91,7 @@ class Level:
         self.fog_mask_surf.set_colorkey((255,255,255))
         screen.blit(self.fog_mask_surf, self.bg_rect)
 
-    def setLevel(
+    def _setLevel(
         self, 
         screen : pygame.Surface, 
         player : pl.Player,
@@ -102,7 +119,7 @@ class Level:
                  object["pos"][1]*self.scale_fact[1]),
             )
 
-    def blitLevel(
+    def _blitLevel(
         self, 
         screen : pygame.Surface, 
         frame : int,
@@ -121,7 +138,7 @@ class Level:
         clock : pygame.Clock, 
         max_fps : int,
     ):
-        self.setLevel(screen, player)
+        self._setLevel(screen, player)
         frame = 0
         level_passed = False
         self.quit = False
@@ -143,20 +160,20 @@ class Level:
                     in_inventory = not in_inventory
             
 
-            self.blitLevel(screen, frame)
+            self._blitLevel(screen, frame)
             
             player_next_pos = player.getNextPos(keys)
 
             if (in_inventory 
                 or (self.has_bound_mask 
-                    and self.doesBoundMaskOverlap(player, player_next_pos))
+                    and self._doesBoundMaskOverlap(player, player_next_pos))
                 ):
                 player.idle(frame)
             else:
                 player.move(frame)
 
             if self.is_menu:
-                level_passed = self.chooseClass(player, keys)
+                level_passed = self._chooseClass(player, keys)
             else:
                 for object in self.objects:
                     if (object["type"].has_collision 
@@ -164,18 +181,18 @@ class Level:
                     ):
                         object["type"].collision()
             # if self.is_menu:
-            #     level_passed = self.chooseClass(screen, player)
+            #     level_passed = self._chooseClass(screen, player)
             # else:
             #     # self.checkCollision()
             #     for character in self.characters:
             #        character[0].idle(self.screen, character[2], frame)
             #     #    if player.rect.colliderect(character[0].rect):
             #     #        if character[0].collision_type == "battle":
-            #     #            self.playBattle(character[0])
+            #     #            self._playBattle(character[0])
             #     #            character[0].collision_type = "nobattle"
             
             if self.has_fog:
-                self.setFogPos(screen, player.rect.center)
+                self._setFogPos(screen, player.rect.center)
             
             for dialogue in self.dialogue_boxes:
                 dialogue["box"].show(screen, dialogue["pos"])
@@ -192,7 +209,7 @@ class Level:
         if not self.quit:
             self.passed = True
 
-    def playBattle(
+    def _playBattle(
         self, 
         player : pl.Player, 
         enemy : ch.Enemy, 
@@ -212,7 +229,7 @@ class Level:
             frame += 1
             clock.tick(max_fps)
     
-    def chooseClass(
+    def _chooseClass(
         self,  
         player : pl.Player, 
         keys : list[int]

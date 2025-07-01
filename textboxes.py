@@ -13,10 +13,10 @@ class Box:
             (self.size[0]/254)*X_RATIO, (self.size[1]/105)*Y_RATIO
         )
         
-        self.setBox()
+        self._setBox()
 
         
-    def setBox(self):
+    def _setBox(self):
         if self.type == "inventory":
             self.box = pygame.image.load("assets/dialogue/inventory.png")
             self.box = pygame.transform.scale_by(self.box, (X_RATIO, Y_RATIO))
@@ -54,7 +54,7 @@ class Text:
         pygame.font.init()
         if from_file:
             self.path = text
-            self.text = self.setText()
+            self.text = self._setText()
         else:
             self.text = text
         self.font = pygame.font.Font(f"assets/font/{font_name}.ttf")
@@ -70,7 +70,7 @@ class Text:
         self.rect = self.surface.get_rect()
 
 
-    def setText(self):
+    def _setText(self):
         text_file = open(f"assets/dialogue/{self.path}.txt")
         text = text_file.read()
         text_file.close()

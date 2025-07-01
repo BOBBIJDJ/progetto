@@ -1,6 +1,7 @@
 import pygame
 import copy
 import weapons as wp
+import objects as obj
 from config import X_RATIO, Y_RATIO
 
 class Character:
@@ -18,10 +19,10 @@ class Character:
 		self.max_frames = max_frames
 		self.collision_type = ""
 		self.frame_mult = frame_mult
-		self.setSprites()
+		self._setSprites()
 		self.rect = self.static_right.get_rect()
 
-	def setSprites(self):
+	def _setSprites(self):
 		self.static_right = pygame.image.load(
 			f"{self.path}/static/static_r.png"
 		)
@@ -117,7 +118,7 @@ class Enemy(Character):
 		self.max_mana = max_mana
 		self.weakness = weakness
 		self.collision_type = "battle"
-		self.setAttackAnimations()
+		# self.setAttackAnimations()
 	
 	# def setAttackAnimations(self):
 	# 	self.attack_anim = []
@@ -135,6 +136,7 @@ class Subplayer(Character):
 		max_frames : int,
 		weapons : list[wp.Weapon] = [],
 		spells : list[wp.Spell] = [],
+		items : list[obj.Item] = [],
 		frame_mult : int = 4,
 	):
 		Character.__init__(self, name, type, max_frames, frame_mult)
@@ -142,12 +144,7 @@ class Subplayer(Character):
 		self.max_mana = max_mana
 		self.weapons = weapons
 		self.spells = spells
-
-	def setSpells(
-		self, 
-		spells : dict[str, wp.Spell],
-	):
-		self.spells = copy.deepcopy(spells)
+		self.items = items
 
 # nemico = Enemy("Mostro", 150, {"fire", "ice"}, 15, 10)
 # print(nemico)
@@ -164,11 +161,14 @@ class Subplayer(Character):
 # ]
 
 # orc = NPC("Orco ripugnante", "orc", 4)
-mage = Subplayer("Mago Merlino", "mage", 100, 30, 4)
-mage.setWeapons({
-	"ascia" : wp.spade["ascia"],
-	"arco" : wp.archi["semplice"]
-})
+mage = Subplayer(
+	"Mago Merlino", "mage", 100, 30, 4, 
+	weapons=[
+		wp.spade["ascia"],
+		wp.archi["semplice"],
+	]
+)
+
 # princess = NPC("Principessa", "princess", 4)
 knight = Subplayer("Cavaliere", "knight", 100, 30, 4)
 archer = Subplayer("Robin Hood", "archer", 100, 30, 4)

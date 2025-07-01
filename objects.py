@@ -44,12 +44,12 @@ class Chest(Object):
         self.opened = pygame.image.load(f"{self.path}/open.png")
         self.opened = pygame.transform.scale_by(self.opened, self.scale_fact)
 
-    def toOpen(self):
+    def _toOpen(self):
         self.current = self.opened
 
     def collision(self):
         self.has_collision = False
-        self.toOpen()
+        self._toOpen()
         # dà al giocatore un deterimanto oggetto
         # player.addItem(item)
         # dove item = {"name" : "pozione", "tipo" : obj.Item} 
