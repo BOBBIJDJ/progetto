@@ -94,9 +94,14 @@ class Level:
         screen : pygame.Surface, 
         player : pl.Player,
     ):
-        self.characters = copy.deepcopy(self.characters_ref)
-        self.objects = copy.deepcopy(self.objects_ref)
-        self.dialogue_boxes = self.dialogue_boxes_ref
+        if self.is_menu:
+            self.characters = self.characters_ref
+            self.objects = self.objects_ref
+            self.dialogue_boxes = self.dialogue_boxes_ref
+        else:
+            self.characters = copy.deepcopy(self.characters_ref)
+            self.objects = copy.deepcopy(self.objects_ref)
+            self.dialogue_boxes = copy.deepcopy(self.dialogue_boxes_ref)
         screen.blit(self.bg, self.bg_rect)
         player.setPos(
             screen,
@@ -203,6 +208,7 @@ class Level:
             pygame.display.flip()
             frame += 1
             clock.tick(max_fps)
+            
         if not self.quit:
             self.passed = True
 
@@ -251,63 +257,63 @@ class Level:
 #         Level.__init__(self, name, path, win_rect, scale_fact, characters_ref = player_classes)
 #         self.player_start_pos = (32, 32)
 #         self.is_menu = True
-levels = [ 
-    Level(
-        "Start Menu", 
-        "assets/levels/menu", 
-        start_pos = (32,32), 
-        is_menu = True, 
-        characters_ref = [
-            {
-                "type" : copy.deepcopy(ch.knight), 
-                "pos" : (256, 240), 
-                "rot" : "left",
-            },
-            {
-                "type" : copy.deepcopy(ch.mage), 
-                "pos" : (336,240), 
-                "rot" : "left",
-            },
-            {
-                "type" : copy.deepcopy(ch.archer), 
-                "pos" : (176, 240), 
-                "rot" : "left",
-            },
-        ],
-    ),
-    Level(
-        "Maze", 
-        "assets/levels/maze", 
-        start_pos = (256, 480), 
-        has_fog = False,
-        # characters_ref = [
-        #     {
-        #         "type" : copy.deepcopy(ch.knight), 
-        #         "pos" : (256, 240), 
-        #         "rot" : "left",
-        #     },
-        #     {
-        #         "type" : copy.deepcopy(ch.mage), 
-        #         "pos" : (336,240), 
-        #         "rot" : "left",
-        #     },
-        #     {
-        #         "type" : copy.deepcopy(ch.archer), 
-        #         "pos" : (176, 240), 
-        #         "rot" : "left",
-        #     },
-        # ],
-        objects_ref = [
-            {
-                "type" : copy.deepcopy(obj.chest), 
-                "pos" : (400, 400),
-            },
-        ],
-        # dialogue_box_ref = [
-        #     {
-        #         "box" : tbx.test_dialogue, 
-        #         "pos" : (256,256),
-        #     },
-        # ],
-    ),
-]
+# levels = [ 
+#     Level(
+#         "Start Menu", 
+#         "assets/levels/menu", 
+#         start_pos = (32,32), 
+#         is_menu = True, 
+#         characters_ref = [
+#             {
+#                 "type" : copy.deepcopy(ch.knight), 
+#                 "pos" : (256, 240), 
+#                 "rot" : "left",
+#             },
+#             {
+#                 "type" : copy.deepcopy(ch.mage), 
+#                 "pos" : (336,240), 
+#                 "rot" : "left",
+#             },
+#             {
+#                 "type" : copy.deepcopy(ch.archer), 
+#                 "pos" : (176, 240), 
+#                 "rot" : "left",
+#             },
+#         ],
+#     ),
+#     Level(
+#         "Maze", 
+#         "assets/levels/maze", 
+#         start_pos = (256, 480), 
+#         has_fog = False,
+#         # characters_ref = [
+#         #     {
+#         #         "type" : copy.deepcopy(ch.knight), 
+#         #         "pos" : (256, 240), 
+#         #         "rot" : "left",
+#         #     },
+#         #     {
+#         #         "type" : copy.deepcopy(ch.mage), 
+#         #         "pos" : (336,240), 
+#         #         "rot" : "left",
+#         #     },
+#         #     {
+#         #         "type" : copy.deepcopy(ch.archer), 
+#         #         "pos" : (176, 240), 
+#         #         "rot" : "left",
+#         #     },
+#         # ],
+#         objects_ref = [
+#             {
+#                 "type" : copy.deepcopy(obj.chest), 
+#                 "pos" : (400, 400),
+#             },
+#         ],
+#         # dialogue_box_ref = [
+#         #     {
+#         #         "box" : tbx.test_dialogue, 
+#         #         "pos" : (256,256),
+#         #     },
+#         # ],
+#     ),
+# ]

@@ -130,16 +130,16 @@ class Player:
 		self.name = player_class.name
 		self.type = player_class.type
 		self.path = player_class.path
-		self.weapons = copy.deepcopy(player_class.weapons)
-		self.spells = copy.deepcopy(player_class.spells)
-		self.items = copy.deepcopy(player_class.items)
+		self.weapons = player_class.weapons
+		self.spells = player_class.spells
+		self.items = player_class.items
 		self.max_hp = player_class.max_hp
 		self.hp = self.max_hp
 		self.max_mana = player_class.max_mana
 		self.mana = self.max_mana
 		self._setSprites()
 		tmp_rect_pos = self.rect.center
-		self.rect = copy.deepcopy(player_class.rect)
+		self.rect = player_class.rect
 		self.rect.center = tmp_rect_pos
 
 	def addWeapon(

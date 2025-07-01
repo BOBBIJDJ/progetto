@@ -34,13 +34,18 @@ class Object:
     def collision(self):
         pass
 
+class Item:
+    pass
+
 class Chest(Object):
     def __init__(
         self, 
-        name : str,
+        items : list[Item] = [],
     ):
         path = "assets/objects/chest"
+        name = "chest"
         Object.__init__(self, name, path, has_collision = True)
+        self.items = items
         self.opened = pygame.image.load(f"{self.path}/open.png")
         self.opened = pygame.transform.scale_by(self.opened, self.scale_fact)
 
@@ -59,8 +64,6 @@ class Chest(Object):
         # else:
         #       self.items[item["name"]] = {"tipo" : copy.deepcopy(item["tipo"]), "quantity" = 1} 
 
-class Item:
-    pass
 
 chest = Chest("chest")
 

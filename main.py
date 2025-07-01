@@ -38,7 +38,50 @@ frame_count = 0
 running = True
 in_menu = True
 
-levels = lv.levels
+# levels = lv.levels
+levels = [ 
+    lv.Level(
+        "Start Menu", 
+        "assets/levels/menu", 
+        start_pos = (32,32), 
+        is_menu = True, 
+        characters_ref = [
+            {
+                "type" : ch.Subplayer("Cavaliere", "knight", 100, 30, 4), 
+                "pos" : (256, 240), 
+                "rot" : "left",
+            },
+            {
+                "type" : ch.Subplayer(
+                    "Mago Merlino", "mage", 200, 50, 4,
+                    weapons = [
+                        wp.spade["ascia"],
+                        wp.archi["semplice"],   
+                    ],
+                ),
+                "pos" : (336,240), 
+                "rot" : "left",
+            },
+            {
+                "type" : ch.Subplayer("Robin Hood", "archer", 100, 30, 4), 
+                "pos" : (176, 240), 
+                "rot" : "left",
+            },
+        ],
+    ),
+    lv.Level(
+        "Maze", 
+        "assets/levels/maze", 
+        start_pos = (256, 480), 
+        has_fog = False,
+        objects_ref = [
+            {
+                "type" : obj.Chest(), 
+                "pos" : (400, 400),
+            },
+        ],
+    ),
+]
 
 while running:
 
