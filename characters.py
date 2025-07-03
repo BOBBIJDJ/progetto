@@ -2,12 +2,11 @@ import copy
 
 import pygame
 
-import config as cfg
+from config import X_RATIO, Y_RATIO
 import weapons as wp
 import objects as obj
 
-X_RATIO = cfg.X_RATIO
-Y_RATIO = cfg.Y_RATIO
+json_list = list
 
 class Character:
 	def __init__(
@@ -16,53 +15,54 @@ class Character:
 		type : str,
 		max_frames : int,
 		frame_mult : int = 4,
+		scale_fact : int | float = 1,
 	) -> None:
 		self.name = name
 		self.type = type
 		self.path = f"assets/sprites/{self.type}"
-		self.scale_fact = (1*X_RATIO, 1*Y_RATIO)
+		self.scale_fact = (scale_fact*X_RATIO, scale_fact*Y_RATIO)
 		self.max_frames = max_frames
-		self.collision_type = ""
 		self.frame_mult = frame_mult
+		self.collision_type = ""
 		self._setSprites()
-		self.rect = self.static_right.get_rect()
+		self.rect = self._static_right.get_rect()
 
 	def _setSprites(self) -> None:
-		self.static_right = pygame.image.load(
+		self._static_right = pygame.image.load(
 			f"{self.path}/static/static_r.png"
 		)
-		self.static_right = pygame.transform.scale_by(
-			self.static_right, self.scale_fact
+		self._static_right = pygame.transform.scale_by(
+			self._static_right, self.scale_fact
 		)
-		self.static_left = pygame.image.load(
+		self._static_left = pygame.image.load(
 			f"{self.path}/static/static_l.png"
 		)
-		self.static_left = pygame.transform.scale_by(
-			self.static_left, self.scale_fact
+		self._static_left = pygame.transform.scale_by(
+			self._static_left, self.scale_fact
 		)
-		self.right_idle = []
-		self.left_idle = []
+		self._right_idle = []
+		self._left_idle = []
 		for i in range(self.max_frames):
 			for j in range(self.frame_mult):
 				k = (self.frame_mult * i) + j
-				self.right_idle.append(
+				self._right_idle.append(
 					pygame.image.load(
 						f"{self.path}/right_idle/{i%self.max_frames}.png"
 					)
 				)
-				self.right_idle[k] = pygame.transform.scale_by(
-					self.right_idle[k], self.scale_fact
+				self._right_idle[k] = pygame.transform.scale_by(
+					self._right_idle[k], self.scale_fact
 				)
-				self.left_idle.append(
+				self._left_idle.append(
 					pygame.image.load(
 						f"{self.path}/left_idle/{i%self.max_frames}.png"
 					)
 				)
-				self.left_idle[k] = pygame.transform.scale_by(
-					self.left_idle[k], self.scale_fact
+				self._left_idle[k] = pygame.transform.scale_by(
+					self._left_idle[k], self.scale_fact
 				)
-		self.current_anim = self.right_idle
-		self.current_rot = self.static_right
+		self._current_anim = self._right_idle
+		self._current_rot = self._static_right
 
 	def setPos(
 		self, 
@@ -71,11 +71,11 @@ class Character:
 		rot : str,
 	) -> None:
 		if rot == "right":
-			self.current_rot = self.static_right
+			self._current_rot = self._static_right
 		else:
-			self.current_rot = self.static_left
+			self._current_rot = self._static_left
 		self.rect.center = pos
-		screen.blit(self.current_rot, self.rect)
+		screen.blit(self._current_rot, self.rect)
 		
 	def idle(
 		self, 
@@ -84,13 +84,13 @@ class Character:
 		frame : int,
 	) -> None:
 		if rot == "right":
-			self.current_anim = self.right_idle
+			self._current_anim = self._right_idle
 		else:
-			self.current_anim = self.left_idle
+			self._current_anim = self._left_idle
 		
 		anim_frame = frame % (self.max_frames * self.frame_mult)
 		
-		screen.blit(self.current_anim[anim_frame], self.rect)
+		screen.blit(self._current_anim[anim_frame], self.rect)
 
 	
 class NPC(Character):
@@ -139,27 +139,21 @@ class Subplayer(Character):
 		max_hp : int,
 		max_mana : int,
 		max_frames : int,
-		weapons : list[wp.Weapon] = [],
-		spells : list[wp.Spell] = [],
-		items : list[obj.Item] = [],
 		frame_mult : int = 4,
+		scale_fact : int | float = 1,
+		weapons : json_list = [],
+		spells : json_list = [],
+		items : json_list = [],
 	) -> None:
-		Character.__init__(self, name, type, max_frames, frame_mult)
+		Character.__init__(self, name, type, max_frames, frame_mult, scale_fact)
 		self.max_hp = max_hp
 		self.max_mana = max_mana
-		self.weapons = weapons
-		self.spells = spells
-		self.items = items
+		self.weapons = [wp.weapons[weap["type"]][weap["key"]] for weap in weapons]
+		self.spells = [wp.spells[spel["type"]][spel["key"]] for spel in spells]
+		self.items = [obj.items[item["type"]][item["key"]] for item in items]
 
-# orc = NPC("Orco ripugnante", "orc", 4)
-mage = Subplayer(
-	"Mago Merlino", "mage", 100, 30, 4, 
-	weapons=[
-		wp.spade["ascia"],
-		wp.archi["semplice"],
-	]
-)
-
-# princess = NPC("Principessa", "princess", 4)
-knight = Subplayer("Cavaliere", "knight", 100, 30, 4)
-archer = Subplayer("Robin Hood", "archer", 100, 30, 4)
+CLASSES = {
+	"Character" : Character,
+	"Subplayer" : Subplayer,
+	"Enemy" : Enemy,
+}

@@ -3,38 +3,39 @@ from math import sqrt
 
 import pygame
 
-import config as cfg
+from config import X_RATIO, Y_RATIO, MAX_RATIO
 import characters as ch
 import objects as obj
 import textboxes as tbx
 import weapons as wp
 
-X_RATIO = cfg.X_RATIO
-Y_RATIO = cfg.Y_RATIO
-MAX_RATIO = cfg.MAX_RATIO
-	
 class Player:
 	
 	def __init__(
 		self, 
 		screen : pygame.Surface, 
 		max_frames : int,
+		frame_mult : int = 4,
+		walk_speed : int | float = 2,
+		max_hp : int = 10,
+		max_mana : int = 0,
+		scale_fact : int | float = 1,
 	) -> None:
 		self.name = "???"
-		self.path = "assets/sprites/default"
-		self.scale_factor = (1*X_RATIO, 1*Y_RATIO)
-		self.walk_speed = 2*MAX_RATIO
-		self.screen = screen
-		self.max_frames = max_frames
+		self._path = "assets/sprites/default"
+		self._scale_fact = (scale_fact*X_RATIO, scale_fact*Y_RATIO)
+		self._walk_speed = walk_speed*MAX_RATIO
+		self._screen = screen
+		self._max_frames = max_frames
 		self.weapons = list()
 		self.spells = list()
 		self.items = list()
-		self.frame_mult = 4
+		self._frame_mult = frame_mult
 		self._setSprites()
-		self.rect = self.static_right.get_rect()
+		self.rect = self._static.get_rect()
 		self.is_dead = False
-		self.max_hp = self.hp = 10
-		self.max_mana = self.mana = 0 
+		self.max_hp = self.hp = max_hp
+		self.max_mana = self.mana = max_mana
 		self.inventory = Inventory(self)
 		
 	def showStatic(
@@ -44,7 +45,7 @@ class Player:
 	) -> None:
 		tmp_rect = copy.deepcopy(self.rect)
 		tmp_rect.center = (pos[0]*X_RATIO, pos[1]*Y_RATIO)
-		screen.blit(self.static_right, tmp_rect)
+		screen.blit(self._static_right, tmp_rect)
 
 	def restore(
 		self, 
@@ -62,69 +63,69 @@ class Player:
 				self.mana += potion["value"]
 
 	def _setMask(self) -> None:
-		self.left_mask = pygame.mask.from_surface(self.static_left)
-		self.right_mask = pygame.mask.from_surface(self.static_right)
+		self._left_mask = pygame.mask.from_surface(self._static_left)
+		self._right_mask = pygame.mask.from_surface(self._static_right)
 
 	def _setSprites(self) -> None:
-		self.static_right = pygame.image.load(
-			f"{self.path}/static/static_r.png"
+		self._static_right = pygame.image.load(
+			f"{self._path}/static/static_r.png"
 		)
-		self.static_right = pygame.transform.scale_by(
-			self.static_right, self.scale_factor
+		self._static_right = pygame.transform.scale_by(
+			self._static_right, self._scale_fact
 		)
-		self.static_left = pygame.image.load(
-			f"{self.path}/static/static_l.png"
+		self._static_left = pygame.image.load(
+			f"{self._path}/static/static_l.png"
 		)
-		self.static_left = pygame.transform.scale_by(
-			self.static_left, self.scale_factor
+		self._static_left = pygame.transform.scale_by(
+			self._static_left, self._scale_fact
 		)
 		self._setMask()
 		# WALK
-		self.right_walk = []
-		self.left_walk = []
+		self._right_walk = []
+		self._left_walk = []
 		# IDLE
-		self.right_idle = []
-		self.left_idle = []
-		for i in range(self.max_frames):
-			for j in range(self.frame_mult):
-				k = (self.frame_mult * i) + j
+		self._right_idle = []
+		self._left_idle = []
+		for i in range(self._max_frames):
+			for j in range(self._frame_mult):
+				k = (self._frame_mult * i) + j
 				# WALK:
 				# right
-				self.right_walk.append(
+				self._right_walk.append(
 					pygame.image.load(
-						f"{self.path}/right_walk/{i%self.max_frames}.png"
+						f"{self._path}/right_walk/{i%self._max_frames}.png"
 					)
 				)
-				self.right_walk[k] = pygame.transform.scale_by(
-					self.right_walk[k], self.scale_factor
+				self._right_walk[k] = pygame.transform.scale_by(
+					self._right_walk[k], self._scale_fact
 				)
 				# left
-				self.left_walk.append(
+				self._left_walk.append(
 					pygame.image.load(
-						f"{self.path}/left_walk/{i%self.max_frames}.png"
+						f"{self._path}/left_walk/{i%self._max_frames}.png"
 					)
 				)
-				self.left_walk[k] = pygame.transform.scale_by(
-					self.left_walk[k], self.scale_factor
+				self._left_walk[k] = pygame.transform.scale_by(
+					self._left_walk[k], self._scale_fact
 				)
 				# IDLE:
 				# right
-				self.right_idle.append(
+				self._right_idle.append(
 					pygame.image.load(
-						f"{self.path}/right_idle/{i%self.max_frames}.png"
+						f"{self._path}/right_idle/{i%self._max_frames}.png"
 					)
 				)
-				self.right_idle[k] = pygame.transform.scale_by(
-					self.right_idle[k], self.scale_factor
+				self._right_idle[k] = pygame.transform.scale_by(
+					self._right_idle[k], self._scale_fact
 				)
 				# left
-				self.left_idle.append(
+				self._left_idle.append(
 					pygame.image.load(
-						f"{self.path}/left_idle/{i%self.max_frames}.png"
+						f"{self._path}/left_idle/{i%self._max_frames}.png"
 					)
 				)
-				self.left_idle[k] = pygame.transform.scale_by(
-					self.left_idle[k], self.scale_factor
+				self._left_idle[k] = pygame.transform.scale_by(
+					self._left_idle[k], self._scale_fact
 				)
 				
 		self._setRotation("right")
@@ -135,7 +136,10 @@ class Player:
 	) -> None:
 		self.name = player_class.name
 		self.type = player_class.type
-		self.path = player_class.path
+		self._path = player_class.path
+		self._scale_fact = player_class.scale_fact
+		self._max_frames = player_class.max_frames
+		self._frame_mult = player_class.frame_mult
 		self.weapons = player_class.weapons
 		self.spells = player_class.spells
 		self.items = player_class.items
@@ -175,91 +179,91 @@ class Player:
 		pos : tuple[int, int],
 	) -> None:
 		self.rect.center = pos
-		screen.blit(self.static, self.rect)
+		screen.blit(self._static, self.rect)
 
 	def _setRotation(
 		self, 
 		rot : str,
 	) -> None:
 		if rot == "left":
-			self.current_walk = self.left_walk
-			self.current_idle = self.left_idle
-			self.static = self.static_left
-			self.mask = self.left_mask
+			self._current_walk = self._left_walk
+			self._current_idle = self._left_idle
+			self._static = self._static_left
+			self.mask = self._left_mask
 		else:
-			self.current_walk = self.right_walk
-			self.current_idle = self.right_idle
-			self.static = self.static_right
-			self.mask = self.right_mask
+			self._current_walk = self._right_walk
+			self._current_idle = self._right_idle
+			self._static = self._static_right
+			self.mask = self._right_mask
 
 	def idle(
 		self, 
 		frame : int,
 	) -> None:
-		anim_frame = frame % (self.max_frames * self.frame_mult)
-		self.screen.blit(self.current_idle[anim_frame], self.rect)
+		anim_frame = frame % (self._max_frames * self._frame_mult)
+		self._screen.blit(self._current_idle[anim_frame], self.rect)
 
 	def _normalize_movement(self) -> None:
-		norm = sqrt(sum((comp**2) for comp in self.movement))
+		norm = sqrt(sum((comp**2) for comp in self._movement))
 		if norm != 0:
-			self.movement = [
-				(comp/norm)*self.walk_speed for comp in self.movement
+			self._movement = [
+				(comp/norm)*self._walk_speed for comp in self._movement
 			]
+
 	def getNextPos(
 		self, 
 		keys : list[int],
-	) -> tuple[int, int]:
-		self.movement = [0,0]
+	) -> None:
+		self._movement = [0,0]
 		if keys[pygame.K_a]:
 			self._setRotation("left")
-			self.movement[0] += -1
+			self._movement[0] += -1
 		if keys[pygame.K_d]:
 			self._setRotation("right")
-			self.movement[0] += 1
+			self._movement[0] += 1
 		if keys[pygame.K_s]:
-			self.movement[1] += 1
+			self._movement[1] += 1
 		if keys[pygame.K_w]:
-			self.movement[1] += -1
+			self._movement[1] += -1
 		self._normalize_movement()
-		next_pos = (
-			self.rect.topleft[0]+self.movement[0], 
-			self.rect.topleft[1]+self.movement[1]
+		self.next_pos = (
+			self.rect.topleft[0]+self._movement[0], 
+			self.rect.topleft[1]+self._movement[1]
 		)
-		return next_pos
 
 	def move(
 		self, 
 		frame : int,
 	) -> None:
-		if self.movement == [0,0]:
+		if self._movement == [0,0]:
 			self.idle(frame)
-			return
+			return 
 
-		anim_frame = frame % (self.max_frames * self.frame_mult)
+		anim_frame = frame % (self._max_frames * self._frame_mult)
 
-		self.rect = self.rect.move(self.movement)
-		self.screen.blit(self.current_walk[anim_frame], self.rect)
+		self.rect = self.rect.move(self._movement)
+		self._screen.blit(self._current_walk[anim_frame], self.rect)
 
 
 class Inventory:
 	def __init__(self, player : Player) -> None:
-		self.box = tbx.Box("inventory", (475, 197))
-		self.player = player
-		self.weapons_text = tbx.Text("Armi", align = "center")
-		self.spells_text = tbx.Text("Incantesimi", align = "center")
+		self._box = tbx.Box("inventory", (475, 197))
+		self._player = player
+		self._weapons_text = tbx.Text("Armi", align = "center")
+		self._spells_text = tbx.Text("Incantesimi", align = "center")
 		self._update()
 
 	def _update(self) -> None:
-		self.name = tbx.Text(
-			f"{self.player.name}", 
+		self._name = tbx.Text(
+			f"{self._player.name}", 
 			align = "center",
 		)
-		self.hp = tbx.Text(
-			f" PV: {self.player.hp}/{self.player.max_hp}", 
+		self._hp = tbx.Text(
+			f" PV: {self._player.hp}/{self._player.max_hp}", 
 			align = "center",
 		)
-		self.mana = tbx.Text(
-			f"Mana: {self.player.mana}/{self.player.max_mana}", 
+		self._mana = tbx.Text(
+			f"Mana: {self._player.mana}/{self._player.max_mana}", 
 			align = "center",
 		)
 
@@ -268,23 +272,22 @@ class Inventory:
 		screen : pygame.Surface,
 	) -> None:
 		self._update()
-		self.box.show(screen, (256, 256))
-		self.player.showStatic(screen, (73, 113))
-		self.name.show(screen, (73, 214))
-		self.hp.show(screen, (73, 307))
-		self.mana.show(screen, (73, 400))
-		self.weapons_text.show(screen, (218, 113))
-		self.spells_text.show(screen, (400, 113))
-		if self.player.weapons:
+		self._box.show(screen, (256, 256))
+		self._player.showStatic(screen, (73, 113))
+		self._name.show(screen, (73, 214))
+		self._hp.show(screen, (73, 307))
+		self._mana.show(screen, (73, 400))
+		self._weapons_text.show(screen, (218, 113))
+		self._spells_text.show(screen, (400, 113))
+		if self._player.weapons:
 			for weapon, i in zip(
-				self.player.weapons, 
-				range(len(self.player.weapons)),
+				self._player.weapons, 
+				range(len(self._player.weapons)),
 			):
 				weapon.showBox(screen, (218, 203+(69*i)))
-		if self.player.spells:
+		if self._player.spells:
 			for spell, j in zip(
-				self.player.spells, 
-				range(len(self.player.spells)),
+				self._player.spells, 
+				range(len(self._player.spells)),
 			):
 				spell.showBox(screen, (400, 203+(69*j)))
-		

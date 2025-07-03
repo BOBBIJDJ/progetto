@@ -2,12 +2,9 @@ from random import randint
 
 import pygame
 
-import config as cfg
+from config import X_RATIO, Y_RATIO
 import objects as obj
 import textboxes as tbx
-
-X_RATIO = cfg.X_RATIO
-Y_RATIO = cfg.Y_RATIO
 
 class Weapon:
 	def __init__(
@@ -18,43 +15,44 @@ class Weapon:
 		crit : int,
 		max_frames : int,
 		frame_mult : int = 4,
+		scale_fact : int | float = 1,
 	) -> None:
-		self.name = name
-		self.type = type
-		self.scale_fact = (1*X_RATIO, 1*Y_RATIO)
-		self.path = f"assets/weapons/{self.type}"
-		self.damage = damage
-		self.crit = crit
-		self.max_frames = max_frames
-		self.frame_mult = frame_mult
-		self.setSprites()
-		self.attacked = False
-		self.current_frame = 0
+		self._name = name
+		self._type = type
+		self._scale_fact = (scale_fact*X_RATIO, scale_fact*Y_RATIO)
+		self._path = f"assets/weapons/{self._type}"
+		self._damage = damage
+		self._crit = crit
+		self._max_frames = max_frames
+		self._frame_mult = frame_mult
+		self._setSprites()
+		self._attacked = False
+		self._current_frame = 0
 	
-	def setSprites(self) -> None:
-		self.static = pygame.image.load(f"{self.path}/static/static.png")
-		self.static = pygame.transform.scale_by(self.static, self.scale_fact)
-		self.rect = self.static.get_rect()
-		self.left_attack = []
-		self.right_attack = []
-		for i in range(self.max_frames):
-			for j in range(self.frame_mult):
-				k = (self.frame_mult * i) + j
-				self.left_attack.append(
+	def _setSprites(self) -> None:
+		self._static = pygame.image.load(f"{self._path}/static/static.png")
+		self._static = pygame.transform.scale_by(self._static, self._scale_fact)
+		self._rect = self._static.get_rect()
+		self._left_attack = []
+		self._right_attack = []
+		for i in range(self._max_frames):
+			for j in range(self._frame_mult):
+				k = (self._frame_mult * i) + j
+				self._left_attack.append(
 					pygame.image.load(
-						f"{self.path}/left_attack/{i%self.max_frames}.png"
+						f"{self._path}/left_attack/{i%self._max_frames}.png"
 					)
 				)
-				self.left_attack[k] = pygame.transform.scale_by(
-					self.left_attack[k], self.scale_fact
+				self._left_attack[k] = pygame.transform.scale_by(
+					self._left_attack[k], self._scale_fact
 				)
-				self.right_attack.append(
+				self._right_attack.append(
 					pygame.image.load(
-						f"{self.path}/right_attack/{i%self.max_frames}.png"
+						f"{self._path}/right_attack/{i%self._max_frames}.png"
 					)
 				)
-				self.right_attack[k] = pygame.transform.scale_by(
-					self.right_attack[k], self.scale_fact
+				self._right_attack[k] = pygame.transform.scale_by(
+					self._right_attack[k], self._scale_fact
 				)
 
 	def attackAnim(
@@ -62,44 +60,44 @@ class Weapon:
 		screen : pygame.Surface, 
 		rot : str, 
 	) -> None:
-		if self.current_frame < (self.max_frames*self.frame_mult):
+		if self._current_frame < (self._max_frames*self._frame_mult):
 			if rot == "left":
-				self.current_anim = self.left_attack
+				self.current_anim = self._left_attack
 			else:
-				self.current_anim = self.right_attack
-			screen.blit(self.current_anim[self.current_frame], self.rect)
-			self.current_frame += 1
+				self.current_anim = self._right_attack
+			screen.blit(self.current_anim[self._current_frame], self._rect)
+			self._current_frame += 1
 		else:
-			self.current_frame = 0
-			self.attacked = False
+			self._current_frame = 0
+			self._attacked = False
 
 	def setPos(
 		self, 
 		screen : pygame.Surface, 
 		pos : tuple[int, int],
 	) -> None:
-		self.rect.center = (pos[0]*X_RATIO, pos[1]*Y_RATIO)
-		screen.blit(self.static, self.rect)
+		self._rect.center = (pos[0]*X_RATIO, pos[1]*Y_RATIO)
+		screen.blit(self._static, self._rect)
 
 	def attack(self) -> int:
 		crit_prob = randint(1,100)
-		if crit_prob <= self.crit:
-			damage = self.damage * 2
+		if crit_prob <= self._crit:
+			damage = self._damage * 2
 		else:
-			damage = self.damage
-		self.attacked = True
+			damage = self._damage
+		self._attacked = True
 		return damage
 	
-	def setBox(self) -> None:
-		self.box = tbx.Box("weapon", (128, 48))
-		self.name_text = tbx.Text(
-			f"{self.name}", align = "center", font_size=9
+	def _setBox(self) -> None:
+		self._box = tbx.Box("weapon", (128, 48))
+		self._name_text = tbx.Text(
+			f"{self._name}", align = "center", font_size=9
 		)
-		self.dmg_text = tbx.Text(
-			f"Dmg: {self.damage}", align = "center", font_size=9
+		self._dmg_text = tbx.Text(
+			f"Dmg: {self._damage}", align = "center", font_size=9
 		)
-		self.crit_text = tbx.Text(
-			f"Crt: {self.crit}%", align = "center", font_size=9
+		self._crit_text = tbx.Text(
+			f"Crt: {self._crit}%", align = "center", font_size=9
 		)
 
 	def showBox(
@@ -107,20 +105,20 @@ class Weapon:
 		screen : pygame.Surface, 
 		pos : tuple[int, int],
 	) -> None:
-		self.setBox()
-		self.box.show(screen, pos)
-		self.showStatic(screen, (pos[0] - 48, pos[1]))
-		self.name_text.show(screen, (pos[0]+8, pos[1] - 12))
-		self.dmg_text.show(screen, (pos[0]-16, pos[1]+8))
-		self.crit_text.show(screen, (pos[0]+32, pos[1]+8))
+		self._setBox()
+		self._box.show(screen, pos)
+		self._showStatic(screen, (pos[0] - 48, pos[1]))
+		self._name_text.show(screen, (pos[0]+8, pos[1] - 12))
+		self._dmg_text.show(screen, (pos[0]-16, pos[1]+8))
+		self._crit_text.show(screen, (pos[0]+32, pos[1]+8))
 		
-	def showStatic(
+	def _showStatic(
 		self,
 		screen : pygame.Surface,
 		pos : tuple[int, int],
 	) -> None:
-		self.rect.center = (pos[0]*X_RATIO, pos[1]*Y_RATIO)
-		screen.blit(self.static, self.rect)
+		self._rect.center = (pos[0]*X_RATIO, pos[1]*Y_RATIO)
+		screen.blit(self._static, self._rect)
 
 class Spell(Weapon):
 	def __init__(
@@ -134,16 +132,16 @@ class Spell(Weapon):
 		max_frames : int, 
 	) -> None:
 		Weapon.__init__(self, name, type, damage, crit, max_frames)
-		self.effect = effect
-		self.mana = mana
+		self._effect = effect
+		self._mana = mana
 
-	def setBox(self) -> None:
-		Weapon.setBox(self)
-		self.effect_text = tbx.Text(
-			f"Effetto: {self.effect}", align = "center"
+	def _setBox(self) -> None:
+		Weapon._setBox(self)
+		self._effect_text = tbx.Text(
+			f"Effetto: {self._effect}", align = "center"
 		)
-		self.mana_text = tbx.Text(
-			f"Mana: {self.mana}", align = "center"
+		self._mana_text = tbx.Text(
+			f"Mana: {self._mana}", align = "center"
 		)
 
 	def showBox(
@@ -152,12 +150,12 @@ class Spell(Weapon):
 		pos : tuple[int, int],
 	) -> None:
 		Weapon.showBox(self, screen, pos)
-		self.effect_text.show(screen, pos)
-		self.mana_text.show(screen, pos)
+		self._effect_text.show(screen, pos)
+		self._mana_text.show(screen, pos)
 
 	# def launch_spell(self, enemy : ch.Enemy):
 	# 	phys_dmg = self.attack()
-	# 	if self.effect in enemy.weakness:
+	# 	if self._effect in enemy.weakness:
 	# 		return phys_dmg * 2
 	# 	else:
 	# 		return phys_dmg
@@ -171,9 +169,9 @@ class Bow(Weapon):
 		max_frames : int,
 		frame_mult : int = 4,
 	) -> None:
-		self.type = "bow"
+		type = "bow"
 		Weapon.__init__(
-			self, name, self.type, damage, crit, max_frames, frame_mult
+			self, name, type, damage, crit, max_frames, frame_mult
 		)
 
 class Sword(Weapon):
@@ -190,20 +188,23 @@ class Sword(Weapon):
 			self, name, type, damage, crit, max_frames, frame_mult
 		)
 
-spade = {
-	"ascia" : Sword("Ascia vichinga", "axe", 20, 5, 4),
-	"spada" : Sword("Spada semplice", "sword", 20, 10, 8),
-	"spadone" : Sword("Spadone lungo", "sword", 40, 10, 8),
-	"martello" : Sword("Martello di Thor", "hammer", 50, 1, 4),
-	"machete" : Sword("Machete", "machete", 15, 20, 4),
-	"pugnale" : Sword("Pugnale", "dagger", 10, 2, 4, 8)
+weapons = {
+	"spada" : {
+		"ascia" : Sword("Ascia vichinga", "axe", 20, 5, 4),
+		"semplice" : Sword("Spada semplice", "sword", 20, 10, 8),
+		"spadone" : Sword("Spadone lungo", "sword", 40, 10, 8),
+		"martello" : Sword("Martello di Thor", "hammer", 50, 1, 4),
+		"machete" : Sword("Machete", "machete", 15, 20, 4),
+		"pugnale" : Sword("Pugnale", "dagger", 10, 2, 4, 8)
+	},
+	"arco" : {
+		"semplice" : Bow("Arco semplice", 25, 10, 5, 5),
+		"lungo" : Bow("Arco lungo", 45, 20, 5, 10),
+		# "balestra" : Bow("balestra", 60, 5, 15)
+	}
 }
 
-archi = {
-	"semplice" : Bow("Arco semplice", 25, 10, 5, 5),
-	"lungo" : Bow("Arco lungo", 45, 20, 5, 10),
-	# "balestra" : Bow("balestra", 60, 5, 15)
-}
+spells = {}
 
 # incantesimi = {
 # 	"fuoco" : Spell("sfera di fuoco", "fire", 40, 13, 7, "fuoco", 20),
