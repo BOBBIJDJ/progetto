@@ -5,6 +5,7 @@
 
 import copy
 from typing import Literal
+from functools import reduce
 
 import pygame
 
@@ -100,9 +101,11 @@ class Level:
         self._bg = pygame.image.load(f"{self._path}/bg.png")
         self._bg = pygame.transform.scale_by(self._bg, self._scale_fact)
         self._bg_rect = self._bg.get_rect()
-        # self._battle_bg = pygame.image.load(f"assets/levels/battle/bg.png")
-        # self._battle_bg = pygame.transform.scale_by(self._bg, self._scale_fact)
-        # self._battle_bg_rect = self._battle_bg.get_rect()
+        self._battle_bg = pygame.image.load(f"{ASSETS_PATH}/battle/bg.png")
+        self._battle_bg = pygame.transform.scale_by(self._battle_bg, self._scale_fact)
+        self._battle_bg_rect = self._bg_rect
+        self._hp_bar = pygame.image.load(f"{ASSETS_PATH}/hp/hp.png")
+        self._hp_bar = pygame.transform.scale_by(self._hp_bar, self._scale_fact)
         self._player_start_pos = start_pos
         self._characters_ref = characters # [{"type" : NPC1, "pos" : (x,y), "rot" : rot}, ...]
         self._objects_ref = objects # [{"type" : obj1, "pos" : (x,y)}, ...] 
@@ -160,7 +163,7 @@ class Level:
         ## Verifica la collisione tra la maschera del giocatore e quella
         del livello -> bool
         '''
-        overlap = self._mask.overlap(player.mask, player.next_pos)
+        overlap = self._mask.overlap(player.mask["last"], player.next_pos)
         if overlap is None:
             return False
         else:
@@ -170,9 +173,9 @@ class Level:
         '''
         ## Imposta la maschera per la visuale oscurata -> None
         '''
-        self._fog_bg = pygame.image.load("assets/fog/fog.png")
+        self._fog_bg = pygame.image.load(f"{ASSETS_PATH}/fog/fog.png")
         self._fog_bg = pygame.transform.scale_by(self._fog_bg, self._scale_fact)
-        fog_circle = pygame.image.load("assets/fog/circle.png")
+        fog_circle = pygame.image.load(f"{ASSETS_PATH}/fog/circle.png")
         fog_circle = pygame.transform.scale_by(fog_circle, self._scale_fact)
         self.fog_circle_mask = pygame.mask.from_surface(fog_circle)
 
@@ -190,24 +193,6 @@ class Level:
         self._fog_mask_surf = self._fog_mask.to_surface()
         self._fog_mask_surf.set_colorkey((255,255,255))
         screen.blit(self._fog_mask_surf, self._bg_rect)
-    
-    def _setBattle(
-        self,
-        screen : pygame.Surface,
-        player : pl.Player,
-        enemy : ch.Enemy,
-    ) -> None:
-        tmp = 0 # SOSTITUIRE posizione di partenza
-        screen.blit(self._battle_bg, self._battle_bg_rect)
-        player.setPos(
-            screen,
-            (tmp*self._scale_fact[0], tmp*self._scale_fact[1]),
-        )
-        enemy.setPos(
-            screen,
-            (tmp*self._scale_fact[0], tmp*self._scale_fact[1]),
-        )
-
 
     def _setLevel(
         self, 
@@ -251,7 +236,7 @@ class Level:
         screen.blit(self._bg, self._bg_rect)
 
         for character in self._characters:
-           character["type"].idle(screen, character["rot"], frame)
+           character["type"].idle(screen, frame, character["rot"])
         for object in self._objects:
             object["type"].show(screen)
 
@@ -303,9 +288,9 @@ class Level:
             self._can_move = self._canMove(player)
 
             if self._can_move:
-                player.move(frame)
+                player.move(screen, frame)
             else:
-                player.idle(frame)
+                player.idle(screen, frame,)
 
             if self._is_menu:
                 level_passed = self._chooseClass(player, keys)
@@ -316,7 +301,7 @@ class Level:
                 ):
                     if character["type"].is_hostile:
                         self._playBattle(
-                            player, character["type"], clock, max_fps
+                            screen, player, character["type"], clock, max_fps
                         )
                     else:
                         pass
@@ -326,17 +311,6 @@ class Level:
                     and player.rect.colliderect(object["type"].rect)
                 ):
                     object["type"].collision()
-
-            # if self._is_menu:
-            #     level_passed = self._chooseClass(screen, player)
-            # else:
-            #     # self.checkCollision()
-            #     for character in self._characters:
-            #        character[0].idle(self.screen, character[2], frame)
-            #     #    if player.rect.colliderect(character[0].rect):
-            #     #        if character[0].collision_type == "battle":
-            #     #            self._playBattle(character[0])
-            #     #            character[0].collision_type = "nobattle"
             
             if self._has_fog:
                 self._setFogPos(screen, player.rect.center)
@@ -344,9 +318,6 @@ class Level:
             for dialogue in self._dialogues:
                 dialogue["box"].show(screen, dialogue["pos"])
 
-            # if keys[pygame.K_i]:
-            #     in_inventory = not in_inventory
-            
             if self._in_inventory:
                 player.inventory.show(screen)
 
@@ -357,8 +328,118 @@ class Level:
         if not self._quit:
             self.passed = True
 
+    def _showHpBar(
+        self,
+        screen : pygame.Surface,
+        entity : pl.Player | ch.Enemy,
+    ) -> None:
+        if entity.hp >= 0:
+            hp_ratio = entity.hp / entity.max_hp
+        else:
+            hp_ratio = 0
+        hp_bar = pygame.transform.scale_by(
+            self._hp_bar, 
+            (hp_ratio, 1)
+        )
+        hp_bar_rect = hp_bar.get_rect()
+        if isinstance(entity, pl.Player):
+            pos = (47, 82)
+        else:
+            pos = (304, 82)
+        hp_bar_rect.midleft = (pos[0]*X_RATIO, pos[1]*Y_RATIO)
+        screen.blit(hp_bar, hp_bar_rect)
+
+    def _setBattle(
+        self,
+        screen : pygame.Surface,
+        player : pl.Player,
+        enemy : ch.Enemy,
+    ) -> None:
+        screen.blit(self._battle_bg, self._battle_bg_rect)
+
+        player.setPos(
+            screen,
+            (128*self._scale_fact[0], 224*self._scale_fact[1]),
+            "right",
+        )
+        enemy.setPos(
+            screen,
+            (384*self._scale_fact[0], 224*self._scale_fact[1]),
+            "left",
+        )
+
+        self._sections : list[dict[str, tbx.Text | list[wp.PlayerWeapon | wp.PlayerSpell] | function]] = [
+            {
+                "text" : tbx.Text("ARMI", align="center"),
+                "attacks" : player.weapons,
+                "func" : self._blitWeapons,
+            },
+            {
+                "text" : tbx.Text("INCANTESIMI", align="center"),
+                "attacks" : player.spells,
+                "func" : self._blitSpells,
+            },
+        ]
+
+    def _getEnemyAttack(
+        self,
+        player : pl.Player,
+        enemy : ch.Enemy,
+    ) -> wp.Weapon:
+        best_damage = 0
+        for weapon in enemy.weapons:
+            if weapon.damage >= player.hp:
+                best_attack = weapon
+                break
+            potential_damage = (
+                weapon.damage 
+                * (1 + (weapon.crit /100)) 
+                * (enemy.level / player.level)
+            )
+            if potential_damage > best_damage:
+                best_attack = weapon
+                best_damage = potential_damage
+
+        for spell in enemy.spells:
+            if enemy.mana >= spell.mana:
+                spell_damage = (
+                    spell.damage
+                    * (2 if spell.effect in player.weakness else 1)
+                    * (enemy.level / player.level)
+                )
+                if spell_damage >= player.hp:
+                    best_attack = spell
+                    break
+                if ((spell.type == "cure")
+                    and enemy.hp <= (enemy.max_hp * 0.2)):
+                    best_attack = spell
+                    break
+                if spell_damage > best_damage:
+                    best_attack = spell
+                    best_damage = spell_damage
+
+        if (isinstance(best_attack, wp.Spell)
+            and best_attack.effect in player.weakness):
+            player_is_weak = True
+        else:
+            player_is_weak = False
+        
+        if best_attack.type == "cure":
+            enemy.cure()
+            damage = 0
+        else:
+            damage = (
+                best_attack.attack()
+                * (enemy.level / player.level)
+                * (2 if player_is_weak else 1)
+            )
+            
+        return (best_attack, damage)
+
+
     def _playBattle(
         self, 
+        screen : pygame.Surface,
         player : pl.Player, 
         enemy : ch.Enemy, 
         clock : pygame.Clock, 
@@ -367,19 +448,146 @@ class Level:
         '''
         ## Riproduce il sub-gameloop relativo alla lotta -> None
         '''
+        self._setBattle(screen, player, enemy)
+
         frame = 0
         victory = False
+        player_attacking = False
+        enemy_attacking = False
+
+        current_section = self._sections[0]
+
         while (not self._quit) and (not victory):
+
+            message = ""
+
             events = pygame.event.get()
             keys = pygame.key.get_pressed()
+            mouse_buttons = pygame.mouse.get_pressed()
+            mouse_pos = pygame.mouse.get_pos()
             for event in events:
                 if event.type == pygame.QUIT:
                     self._quit = True
-            
+
+            screen.blit(self._battle_bg, self._battle_bg_rect)
+            self._blitStatus(screen, player, enemy, message)
+
+            for i, section in enumerate(self._sections):
+                if section is current_section:
+                    section["text"].changeColor("blue")
+                else:
+                    section["text"].changeColor("white")
+                section["text"].show(screen, (74, 390+(33*i)))
+                if (section["text"].rect.collidepoint(mouse_pos)
+                    and mouse_buttons[0]):
+                    current_section = section
+
+            current_section["func"](screen, player)
+
+            # ottenere l'attacco del giocatore
+            if not player_attacking:
+                for attack in section["attacks"]:
+                    if (attack.box.rect.collidepoint(mouse_pos)
+                        and mouse_buttons[0]):
+                        if (isinstance(attack, wp.Spell)
+                            and player.mana < attack.mana):
+                            message = "Non hai abbastanza mana"
+                        else:
+                            message = ""
+                            player_damage = (
+                                player.getAttackDamage(attack, enemy)
+                            )
+                            player_attack = attack
+
+                            enemy_attack, enemy_damage = self._getEnemyAttack()
+
+                            inflicted = False
+                            player_attacking = True
+                            break
+
+            if player_attacking:
+                player_attacking = player_attack.attackAnim(screen, "right")
+                if not inflicted:
+                    enemy.getDamage(player_damage)
+                    inflicted = True
+                message = (
+                    "Nemico sconfitto! +1 livello" if enemy.is_dead else (
+                        "Ti sei rigenerato" if attack.type == "cure" else (
+                            "Colpo critico!" if attack.critical else ""
+                        )
+                    )
+                )    
+                enemy_attacking = not player_attacking
+
+            if (not enemy.is_dead) and enemy_attacking:
+                pass
+
+
+            player.idle(screen, frame, "right")
+            enemy.idle(screen, frame, "left")
+
+            if keys[pygame.K_f]:
+                enemy.hp -= 10
+
             pygame.display.flip()
             frame += 1
             clock.tick(max_fps)
+
+    def _blitWeapons(
+        self,
+        screen : pygame.Surface,
+        player : pl.Player,
+    ) -> None:
+        for i, weapon in enumerate(player.weapons):
+            weapon.showBox(screen, (220+((i%2)*180), 390+((i//2)*67)))
+
+    def _blitSpells(
+        self,
+        screen : pygame.Surface,
+        player : pl.Player,
+    ) -> None:
+        for i, spell in enumerate(player.spells):
+            spell .showBox(screen, (220+((i%2)*180), 390+((i//2)*67)))
     
+    def _blitStatus(
+        self,
+        screen : pygame.Surface,
+        player : pl.Player,
+        enemy : ch.Enemy,
+        message : str,
+    ) -> None:
+        player_hp = tbx.Text(
+            f"{player.hp}/{player.max_hp}",
+            align = "center",
+        )
+        player_mana = tbx.Text(
+            f"Man: {player.mana}/{player.max_mana}",
+            align = "center"
+        )
+        enemy_hp = tbx.Text(
+            f"{enemy.hp}/{enemy.max_hp}",
+            align = "center",
+        )
+
+        message_text = tbx.Text(
+            f"{message}",
+            align = "left"
+        )
+
+        message_text.show(screen, (256, 339))
+
+        player.name_text.show(screen, (128, 41))
+        player_hp.show(screen, (207, 82))
+        player.level_text.show(screen, (47, 41))
+        self._showHpBar(screen, player)
+        player_mana.show(screen, (74, 456))
+        
+        enemy.name_text.show(screen, (384, 41))
+        enemy_hp.show(screen, (465, 82))
+        enemy.level_text.show(screen, (304, 41))
+        self._showHpBar(screen, enemy)
+
+
     def _chooseClass(
         self,  
         player : pl.Player, 

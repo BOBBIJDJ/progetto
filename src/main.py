@@ -17,7 +17,7 @@ clock = pygame.time.Clock()
 max_fps = 60
 
 # inizializzazione del personaggio controllato dal giocatore
-player = pl.Player(screen, 4)
+player = pl.Player(max_frames=4)
 
 # contatore frame per la gestione delle animazioni
 frame_count = 0
@@ -46,6 +46,7 @@ while running:
             if not level.passed:
                 running = False
                 break
+            del level
     
     # infine si aggiorna la finestra di gioco con le modifiche effettuate
     pygame.display.flip()
