@@ -29,12 +29,76 @@
                         "max_frames" : 4,
                         "weapons" : [
                             {
-                                "type" : "spada",
-                                "key" : "ascia"
+                                "class" : "PlayerWeapon",
+                                "args" : {
+                                    "name" : "Ascia vichinga",
+                                    "type" : "axe",
+                                    "damage" : 20,
+                                    "crit" : 5,
+                                    "max_frames" : 4
+                                } 
                             },
                             {
-                                "type" : "arco",
-                                "key" : "semplice"
+                                "class" : "PlayerWeapon",
+                                "args" : {
+                                    "name" : "Arco semplice",
+                                    "type" : "bow",
+                                    "damage" : 25,
+                                    "crit" : 10,
+                                    "max_frames" : 5
+                                } 
+                            },
+                            {
+                                "class" : "PlayerWeapon",
+                                "args" : {
+                                    "name" : "Spadone lungo",
+                                    "type" : "sword",
+                                    "damage" : 40,
+                                    "crit" : 10,
+                                    "max_frames" : 8
+                                } 
+                            },
+                            {
+                                "class" : "PlayerWeapon",
+                                "args" : {
+                                    "name" : "Machete",
+                                    "type" : "machete",
+                                    "damage" : 15,
+                                    "crit" : 20,
+                                    "max_frames" : 4
+                                } 
+                            }
+                        ],
+                        "spells" : [
+                            {
+                                "class" : "PlayerSpell",
+                                "args" : {
+                                    "name" : "Sfera di fuoco",
+                                    "type" : "fire",
+                                    "damage" : 30,
+                                    "effect" : "fuoco",
+                                    "mana" : 20
+                                } 
+                            },
+                            {
+                                "class" : "PlayerSpell",
+                                "args" : {
+                                    "name" : "+20% hp",
+                                    "type" : "cure",
+                                    "damage" : 0,
+                                    "effect" : "cura",
+                                    "mana" : 20
+                                } 
+                            },
+                            {
+                                "class" : "PlayerSpell",
+                                "args" : {
+                                    "name" : "Vortice",
+                                    "type" : "air",
+                                    "damage" : 45,
+                                    "effect" : "aria",
+                                    "mana" : 25
+                                } 
                             }
                         ]
                     }
@@ -74,6 +138,7 @@
                         "weakness" : [
                             "ice"
                         ],
+                        "level" : 10,
                         "max_frames" : 4
                     }
                 },
