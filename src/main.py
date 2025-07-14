@@ -43,7 +43,7 @@ while running:
     for level in levels:
         if not level.passed:
             level.playLevel(screen, player, clock, max_fps)
-            if not level.passed:
+            if level.quit:
                 running = False
                 break
             del level
