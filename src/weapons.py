@@ -17,7 +17,7 @@ class Weapon:
 		damage : int, 
 		crit : int,
 		max_frames : int,
-		frame_mult : int = 4,
+		frame_mult : int = 8,
 		scale_fact : int | float = 1,
 	) -> None:
 		self._name = name
@@ -44,36 +44,36 @@ class Weapon:
 		self._left_attack = []
 		self._right_attack = []
 		for i in range(self._max_frames):
-			for j in range(self._frame_mult):
-				k = (self._frame_mult * i) + j
-				self._left_attack.append(
-					pygame.image.load(
-						f"{self._path}/left_attack/{i%self._max_frames}.png"
-					)
+			self._left_attack.append(
+				pygame.image.load(
+					f"{self._path}/left_attack/{i}.png"
 				)
-				self._left_attack[k] = pygame.transform.scale_by(
-					self._left_attack[k], self._scale_fact
+			)
+			self._left_attack[i] = pygame.transform.scale_by(
+				self._left_attack[i], self._scale_fact
+			)
+			self._right_attack.append(
+				pygame.image.load(
+					f"{self._path}/right_attack/{i}.png"
 				)
-				self._right_attack.append(
-					pygame.image.load(
-						f"{self._path}/right_attack/{i%self._max_frames}.png"
-					)
-				)
-				self._right_attack[k] = pygame.transform.scale_by(
-					self._right_attack[k], self._scale_fact
-				)
+			)
+			self._right_attack[i] = pygame.transform.scale_by(
+				self._right_attack[i], self._scale_fact
+			)
 
 	def attackAnim(
 		self, 
 		screen : pygame.Surface, 
 		rot : Literal["left", "right"], 
 	) -> None:
-		if self._current_frame < (self._max_frames*self._frame_mult):
+		if self._current_frame < (self._frame_mult*self._max_frames):
 			if rot == "left":
 				self.current_anim = self._left_attack
+				self._rect.center = (357*X_RATIO, 224*Y_RATIO)
 			else:
 				self.current_anim = self._right_attack
-			screen.blit(self.current_anim[self._current_frame], self._rect)
+				self._rect.center = (154*X_RATIO, 224*Y_RATIO)
+			screen.blit(self.current_anim[self._current_frame // self._frame_mult], self._rect)
 			self._current_frame += 1
 			return True
 		else:
@@ -106,10 +106,11 @@ class PlayerWeapon(Weapon):
 		damage : int, 
 		crit : int,
 		max_frames : int,
-		frame_mult : int = 4,
+		frame_mult : int = 8,
 		scale_fact : int | float = 1,
 	) -> None:
 		Weapon.__init__(self, name, type, damage, crit, max_frames, frame_mult, scale_fact)
+		self._setBox()
 
 	def _setBox(self) -> None:
 		self.box = tbx.Box("weapon", (128, 48))
@@ -128,7 +129,6 @@ class PlayerWeapon(Weapon):
 		screen : pygame.Surface, 
 		pos : tuple[int, int],
 	) -> None:
-		self._setBox()
 		self.box.show(screen, pos)
 		self._showStatic(screen, (pos[0] - 48, pos[1]))
 		self._name_text.show(screen, (pos[0]+8, pos[1] - 12))
@@ -168,11 +168,9 @@ class PlayerSpell(Spell):
 		max_frames : int = 4,
 	) -> None:
 		Spell.__init__(self, name, type, damage, effect, mana, max_frames)
+		self._setBox()
 
-	def _setBox(
-		self,
-		battle_size : bool,
-		) -> None:
+	def _setBox(self) -> None:
 		self.box = tbx.Box("spell", (128, 48))
 		self._name_text = tbx.Text(
 			f"{self._name}", align="center", font_size=9
@@ -181,7 +179,7 @@ class PlayerSpell(Spell):
 			f"Dmg: {self.damage}", align="center", font_size=9
 		)
 		self._mana_text = tbx.Text(
-			f"Man: {self._mana}", align="center", font_size=9
+			f"Man: {self.mana}", align="center", font_size=9
 		)
 
 	def showBox(
@@ -190,7 +188,6 @@ class PlayerSpell(Spell):
 		pos : tuple[int, int],
 		battle_size : bool = False,
 	) -> None:
-		self._setBox(battle_size)
 		self.box.show(screen, pos)
 		self._showStatic(screen, (pos[0] - 48, pos[1]))
 		self._name_text.show(screen, (pos[0]+8, pos[1] - 12))
