@@ -49,8 +49,8 @@ class Text:
         font_color : str = "white",
         font_size : int =  10,
         align : Literal["left", "center", "right"] = "left",
-        wrap : bool = False,
         scale_fact : int | float = 1,
+        wrap : bool = False,
     ) -> None:
         if from_file:
             self._path = text
@@ -65,6 +65,7 @@ class Text:
             self._wrap_length = 0
         self._scale_fact = (scale_fact*X_RATIO, scale_fact*Y_RATIO)
         self._surface = FONT.render(self.text, False, font_color, wraplength=self._wrap_length)
+        self._size = self._surface.get_rect().size
         self._surface = pygame.transform.scale_by(self._surface, self._scale_fact)
         self.rect = self._surface.get_rect()
 
@@ -89,38 +90,32 @@ class Text:
         screen.blit(self._surface, self.rect)
 
 
-class TextBox(Box):
+class TextBox(Text):
     def __init__(
         self,
         type : str,
-        text_path : str,
-        size : tuple[int,int],
-        font_name : str = "pixel",
+        text : str,
+        from_file : bool = False,
         font_color : str = "white",
         font_size : int = 10,
         align : Literal["left", "center", "right"] = "left",
         scale_fact : int | float = 1,
     ) -> None:
-        Box.__init__(self, type, size, scale_fact)
-        self.text = Text(
-            text_path, 
-            from_file=True, 
-            font_name=font_name, 
-            font_color=font_color, 
-            font_size=font_size, 
-            align=align, 
-            wrap=True, 
-            scale_fact=scale_fact,
+        Text.__init__(
+            self, text, from_file, font_color, 
+            font_size, align, scale_fact, wrap=True
         )
+        box_size = (self._size[0]+16, self._size[1]+16)
+        self._box = Box(type, box_size)
 
     def show(
         self, 
         screen : pygame.Surface, 
         pos : tuple[int, int],
     ) -> None:
-        Box.show(self, screen, pos)
-        self.text._rect.center = (pos[0]*X_RATIO, pos[1]*Y_RATIO)
-        screen.blit(self.text.surface, self.text.rect)
+        self._box.show(screen, pos)
+        self.rect.center = (pos[0]*X_RATIO, pos[1]*Y_RATIO)
+        screen.blit(self._surface, self.rect)
 
 # test_dialogue = TextBox("window", "testo0", (300, 100))
 
