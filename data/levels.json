@@ -12,7 +12,10 @@
                         "type" : "knight",
                         "max_hp" : 100,
                         "max_mana" : 30,
-                        "max_frames" : 4
+                        "max_frames" : 4,
+                        "weakness" : [
+                            "erba"
+                        ]
                     }
                 }, 
                 "pos" : [256, 240], 
@@ -27,6 +30,9 @@
                         "max_hp" : 200,
                         "max_mana" : 50,
                         "max_frames" : 4,
+                        "weakness" : [
+                            "aria"
+                        ],
                         "weapons" : [
                             {
                                 "class" : "PlayerWeapon",
@@ -114,7 +120,10 @@
                         "type" : "archer",
                         "max_hp" : 100,
                         "max_mana" : 30,
-                        "max_frames" : 4
+                        "max_frames" : 4,
+                        "weakness" : [
+                            "fuoco"
+                        ]
                     }
                 }, 
                 "pos" : [176, 240], 
@@ -138,8 +147,21 @@
                         "weakness" : [
                             "ice"
                         ],
-                        "level" : 10,
-                        "max_frames" : 4
+                        "level" : 1,
+                        "max_frames" : 4,
+                        "dialogue" : "testo0",
+                        "weapons" : [
+                            {
+                                "class" : "Weapon",
+                                "args" : {
+                                    "name" : "Ascia vichinga",
+                                    "type" : "axe",
+                                    "damage" : 20,
+                                    "crit" : 5,
+                                    "max_frames" : 4
+                                } 
+                            }
+                        ]
                     }
                 },
                 "pos" : [256, 256],
