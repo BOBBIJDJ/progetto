@@ -262,24 +262,30 @@ class Level:
         self._setLevel(screen, player)
         frame = 0
         level_passed = False
-        self._quit = False
+        self.quit = False
         self._in_inventory = False
+        next_page = False
+        last_page = False
         
-        while ((not self._quit) 
+        player.saveState()
+
+        while ((not self.quit) 
                and (not level_passed) 
-               and (not player.is_dead)
         ):
+            if player.is_dead:
+                self._setLevel(screen, player)
+                player.reset()
             
             events = pygame.event.get()
             keys = pygame.key.get_pressed()
             for event in events:
                 if event.type == pygame.QUIT:
-                    self._quit = True
-                elif (event.type == pygame.KEYDOWN 
-                      and (event.key == pygame.K_i)
-                    ):
-                    self._in_inventory = not self._in_inventory
-            
+                    self.quit = True
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_i:
+                        self._in_inventory = not self._in_inventory
+                    elif event.key == pygame.K_RETURN:
+                        next_page = not next_page
 
             self._blitLevel(screen, frame)
             
@@ -300,11 +306,20 @@ class Level:
                     and player.rect.colliderect(character["type"].rect)
                 ):
                     if character["type"].is_hostile:
+                        player_last_pos = player.rect.center
+                        enemy_pos = character["type"].rect.center
                         self._playBattle(
                             screen, player, character["type"], clock, max_fps
                         )
-                    else:
-                        pass
+                        player.setPos(screen, player_last_pos)
+                        character["type"].setPos(
+                            screen, enemy_pos, character["rot"]
+                        )
+                    elif character["type"].has_dialogue:
+                        character["type"].blitDialogue(screen, character["pos"])
+                        if next_page != last_page:
+                            character["type"].page += 1
+                            last_page = next_page
 
             for object in self._objects:
                 if (object["type"].has_collision 
@@ -325,7 +340,7 @@ class Level:
             frame += 1
             clock.tick(max_fps)
             
-        if not self._quit:
+        if not self.quit:
             self.passed = True
 
     def _showHpBar(
@@ -385,7 +400,7 @@ class Level:
         self,
         player : pl.Player,
         enemy : ch.Enemy,
-    ) -> wp.Weapon:
+    ) -> tuple[wp.Weapon, int]:
         best_damage = 0
         for weapon in enemy.weapons:
             if weapon.damage >= player.hp:
@@ -428,7 +443,7 @@ class Level:
             enemy.cure()
             damage = 0
         else:
-            damage = (
+            damage = round(
                 best_attack.attack()
                 * (enemy.level / player.level)
                 * (2 if player_is_weak else 1)
@@ -452,14 +467,15 @@ class Level:
 
         frame = 0
         victory = False
+        self.gameover = False
         player_attacking = False
         enemy_attacking = False
 
         current_section = self._sections[0]
 
-        while (not self._quit) and (not victory):
+        message = ""
 
-            message = ""
+        while (not self.quit) and (not victory) and (not self.gameover):
 
             events = pygame.event.get()
             keys = pygame.key.get_pressed()
@@ -467,7 +483,7 @@ class Level:
             mouse_pos = pygame.mouse.get_pos()
             for event in events:
                 if event.type == pygame.QUIT:
-                    self._quit = True
+                    self.quit = True
 
             screen.blit(self._battle_bg, self._battle_bg_rect)
             self._blitStatus(screen, player, enemy, message)
@@ -485,8 +501,10 @@ class Level:
             current_section["func"](screen, player)
 
             # ottenere l'attacco del giocatore
-            if not player_attacking:
-                for attack in section["attacks"]:
+            if ((not player_attacking) 
+                and (not player.is_dead) 
+                and (not enemy.is_dead)):
+                for attack in current_section["attacks"]:
                     if (attack.box.rect.collidepoint(mouse_pos)
                         and mouse_buttons[0]):
                         if (isinstance(attack, wp.Spell)
@@ -499,35 +517,49 @@ class Level:
                             )
                             player_attack = attack
 
-                            enemy_attack, enemy_damage = self._getEnemyAttack()
+                            enemy_attack, enemy_damage = self._getEnemyAttack(player, enemy)
 
-                            inflicted = False
+                            enemy_inflicted = False
+                            player_inflicted = False
                             player_attacking = True
                             break
 
             if player_attacking:
                 player_attacking = player_attack.attackAnim(screen, "right")
-                if not inflicted:
+                if not enemy_inflicted:
                     enemy.getDamage(player_damage)
-                    inflicted = True
+                    enemy_inflicted = True
                 message = (
-                    "Nemico sconfitto! +1 livello" if enemy.is_dead else (
-                        "Ti sei rigenerato" if attack.type == "cure" else (
-                            "Colpo critico!" if attack.critical else ""
+                    "Nemico sconfitto! +1 livello, (premere INVIO)" if enemy.is_dead else (
+                        "Ti sei rigenerato" if player_attack.type == "cure" else (
+                            "Colpo critico!" if player_attack.critical else ""
                         )
                     )
                 )    
                 enemy_attacking = not player_attacking
 
             if (not enemy.is_dead) and enemy_attacking:
-                pass
+                enemy_attacking = enemy_attack.attackAnim(screen, "left")
+                if not player_inflicted:
+                    player.getDamage(enemy_damage)
+                    player_inflicted = True
+                message = (
+                    "Sei morto! (premere INVIO)" if player.is_dead else (
+                        "Il nemico si è rigenerato" if enemy_attack.type == "cure" else (
+                            "Hai subito un colpo critico!" if enemy_attack.critical else ""
+                        )
+                    )
+                )
 
+            if keys[pygame.K_RETURN]:
+                if enemy.is_dead:
+                    player.levelUp()
+                    victory = True
+                elif player.is_dead:
+                    self.gameover = True
 
             player.idle(screen, frame, "right")
             enemy.idle(screen, frame, "left")
-
-            if keys[pygame.K_f]:
-                enemy.hp -= 10
 
             pygame.display.flip()
             frame += 1
@@ -564,6 +596,11 @@ class Level:
             f"Man: {player.mana}/{player.max_mana}",
             align = "center"
         )
+        player_level = tbx.Text(
+            f"lv. {player.level}",
+            align =  "center"
+        )
+        
         enemy_hp = tbx.Text(
             f"{enemy.hp}/{enemy.max_hp}",
             align = "center",
@@ -578,7 +615,7 @@ class Level:
 
         player.name_text.show(screen, (128, 41))
         player_hp.show(screen, (207, 82))
-        player.level_text.show(screen, (47, 41))
+        player_level.show(screen, (47, 41))
         self._showHpBar(screen, player)
         player_mana.show(screen, (74, 456))
         
