@@ -74,46 +74,44 @@ class Player:
 		self._right_idle = []
 		self._left_idle = []
 		for i in range(self._max_frames):
-			for j in range(self._frame_mult):
-				k = (self._frame_mult * i) + j
-				# WALK:
-				# right
-				self._right_walk.append(
-					pygame.image.load(
-						f"{self._path}/right_walk/{i%self._max_frames}.png"
-					)
+			# WALK:
+			# right
+			self._right_walk.append(
+				pygame.image.load(
+					f"{self._path}/right_walk/{i}.png"
 				)
-				self._right_walk[k] = pygame.transform.scale_by(
-					self._right_walk[k], self._scale_fact
+			)
+			self._right_walk[i] = pygame.transform.scale_by(
+				self._right_walk[i], self._scale_fact
+			)
+			# left
+			self._left_walk.append(
+				pygame.image.load(
+					f"{self._path}/left_walk/{i}.png"
 				)
-				# left
-				self._left_walk.append(
-					pygame.image.load(
-						f"{self._path}/left_walk/{i%self._max_frames}.png"
-					)
+			)
+			self._left_walk[i] = pygame.transform.scale_by(
+				self._left_walk[i], self._scale_fact
+			)
+			# IDLE:
+			# right
+			self._right_idle.append(
+				pygame.image.load(
+					f"{self._path}/right_idle/{i}.png"
 				)
-				self._left_walk[k] = pygame.transform.scale_by(
-					self._left_walk[k], self._scale_fact
+			)
+			self._right_idle[i] = pygame.transform.scale_by(
+				self._right_idle[i], self._scale_fact
+			)
+			# left
+			self._left_idle.append(
+				pygame.image.load(
+					f"{self._path}/left_idle/{i}.png"
 				)
-				# IDLE:
-				# right
-				self._right_idle.append(
-					pygame.image.load(
-						f"{self._path}/right_idle/{i%self._max_frames}.png"
-					)
-				)
-				self._right_idle[k] = pygame.transform.scale_by(
-					self._right_idle[k], self._scale_fact
-				)
-				# left
-				self._left_idle.append(
-					pygame.image.load(
-						f"{self._path}/left_idle/{i%self._max_frames}.png"
-					)
-				)
-				self._left_idle[k] = pygame.transform.scale_by(
-					self._left_idle[k], self._scale_fact
-				)
+			)
+			self._left_idle[i] = pygame.transform.scale_by(
+				self._left_idle[i], self._scale_fact
+			)
 				
 		self._static = {
 			"left" : self._static_left,
@@ -198,7 +196,7 @@ class Player:
 		frame : int,
 		rot : Literal["left", "right", "last"] = "last",
 	) -> None:
-		anim_frame = frame % (self._max_frames * self._frame_mult)
+		anim_frame = (frame // self._frame_mult) % self._max_frames
 		screen.blit(self._idle[rot][anim_frame], self.rect)
 
 	def _normalize_movement(self) -> None:
@@ -238,7 +236,7 @@ class Player:
 			self.idle(screen, frame)
 			return 
 
-		anim_frame = frame % (self._max_frames * self._frame_mult)
+		anim_frame = (frame // self._frame_mult) % self._max_frames
 
 		self.rect = self.rect.move(self._movement)
 		screen.blit(self._walk["last"][anim_frame], self.rect)
@@ -248,11 +246,11 @@ class Player:
 		attack : wp.Weapon,
 		enemy : ch.Enemy,
 	) -> int:
-		if (isinstance(attack, wp.Spell)
-			and (attack.effect in enemy.weakness)):
-			enemy_is_weak = True
-		else:
-			enemy_is_weak = False
+		enemy_is_weak = False
+		if isinstance(attack, wp.Spell):
+			if (attack.effect in enemy.weakness):
+				enemy_is_weak = True
+			self.mana -= attack.mana
 		if attack.type == "cure":
 			self._cure()
 			damage = 0
@@ -264,9 +262,35 @@ class Player:
 			)
 		return damage
 	
+	def getDamage(
+		self,
+		damage : int,
+	) -> None:
+		if self.hp > damage:
+			self.hp -= damage
+		else:
+			self.hp = 0
+			self.is_dead = True
+	
 	def _cure(self) -> None:
-		new_hp = self.hp + (self.max_hp * 0.2) 
+		new_hp = round(self.hp + (self.max_hp * 0.2)) 
 		self.hp = min(new_hp, self.max_hp)
+
+	def levelUp(self) -> None:
+		self.hp = self.max_hp = self.max_hp + 15
+		self.mana = self.max_mana = self.max_mana + 1
+		self.level += 1
+
+	def saveState(self) -> None:
+		self._last_hp = self.max_hp
+		self._last_mana = self.max_mana
+		self._last_level = self.level
+
+	def reset(self) -> None:
+		self.is_dead = False
+		self.hp = self.max_hp = self._last_hp
+		self.mana = self.max_mana = self._last_mana
+		self.level = self._last_level
 
 
 class Inventory:
