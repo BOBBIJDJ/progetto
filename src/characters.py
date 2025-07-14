@@ -22,6 +22,7 @@ class Character:
 		scale_fact : int | float = 1,
 		has_collision : bool = True,
 		is_hostile : bool = False,
+		dialogue : str | None = None
 	) -> None:
 		self.name = name
 		self.type = type
@@ -43,6 +44,48 @@ class Character:
 		    f"lv. {self.level}",
 		    align = "center",
 		)
+		if dialogue is not None:
+			self.has_dialogue = True
+			self._getDialogue(dialogue)
+		else:
+			self.has_dialogue = False
+
+	def _getDialogue(
+		self,
+		text : str,
+	) -> None:
+		dialogues = []
+		with open(f"{ASSETS_PATH}/dialogue/{text}.txt") as file:
+			words = file.read().split()
+		phrase = ''
+		for i, word in enumerate(words):
+			if i%20 != 19:
+				phrase += word + ' '
+			else:
+				dialogues.append(phrase)
+				phrase = ''
+		if phrase != '':
+			dialogues.append(phrase)
+		self._dialogue = [
+			tbx.TextBox(
+				"dialogue",
+				dialogue,
+			)  for dialogue in dialogues
+		]
+		self.page = 0
+		self._max_page = len(self._dialogue)
+
+	def blitDialogue(
+		self,
+		screen : pygame.Surface,
+		pos : tuple[int, int],
+		) -> None:
+		dialogue_pos = (pos[0], pos[1]-16)
+		if self.page < self._max_page:
+			self._dialogue[self.page].show(screen, pos)
+		else:
+			self.page = 0
+		
 
 	def _setSprites(self) -> None:
 		self._static_right = pygame.image.load(
@@ -60,24 +103,22 @@ class Character:
 		self._right_idle = []
 		self._left_idle = []
 		for i in range(self.max_frames):
-			for j in range(self.frame_mult):
-				k = (self.frame_mult * i) + j
-				self._right_idle.append(
-					pygame.image.load(
-						f"{self.path}/right_idle/{i%self.max_frames}.png"
-					)
+			self._right_idle.append(
+				pygame.image.load(
+					f"{self.path}/right_idle/{i}.png"
 				)
-				self._right_idle[k] = pygame.transform.scale_by(
-					self._right_idle[k], self.scale_fact
+			)
+			self._right_idle[i] = pygame.transform.scale_by(
+				self._right_idle[i], self.scale_fact
+			)
+			self._left_idle.append(
+				pygame.image.load(
+					f"{self.path}/left_idle/{i}.png"
 				)
-				self._left_idle.append(
-					pygame.image.load(
-						f"{self.path}/left_idle/{i%self.max_frames}.png"
-					)
-				)
-				self._left_idle[k] = pygame.transform.scale_by(
-					self._left_idle[k], self.scale_fact
-				)
+			)
+			self._left_idle[i] = pygame.transform.scale_by(
+				self._left_idle[i], self.scale_fact
+			)
 		self._current_anim = self._right_idle
 		self._current_rot = self._static_right
 
@@ -105,7 +146,7 @@ class Character:
 		else:
 			self._current_anim = self._left_idle
 		
-		anim_frame = frame % (self.max_frames * self.frame_mult)
+		anim_frame = (frame // self.frame_mult)  % self.max_frames
 		
 		screen.blit(self._current_anim[anim_frame], self.rect)
 	
@@ -136,11 +177,15 @@ class Enemy(Character):
 		scale_fact : int | float = 1,
 		has_collision : bool = True,
 		is_hostile : bool = True,
+		dialogue : str | None = None, 
 		weapons : JSON_list = [],
 		spells : JSON_list = [],
 		weakness : list[str] = [],
 	) -> None:
-		Character.__init__(self, name, type, max_frames, level, frame_mult, scale_fact, has_collision, is_hostile)
+		Character.__init__(
+			self, name, type, max_frames, level, frame_mult, 
+			scale_fact, has_collision, is_hostile, dialogue
+		)
 		self.max_hp = self.hp = max_hp
 		self.max_mana = self.mana = max_mana
 		self.weakness = weakness
@@ -163,6 +208,11 @@ class Enemy(Character):
 		else:
 			self.hp = 0
 			self.is_dead = True
+			self.is_hostile = False
+
+	def cure(self) -> None:
+		new_hp = round(self.hp + (self.max_hp * 0.2)) 
+		self.hp = min(new_hp, self.max_hp)
 
 	# def setAttackAnimations(self):
 	# 	self.attack_anim = []
