@@ -15,18 +15,24 @@ class Player:
 	def __init__(
 		self, 
 		max_frames : int,
+		type : str = "default",
+		level : int = 0,
 		frame_mult : int = 4,
 		walk_speed : int | float = 2,
 		max_hp : int = 10,
 		max_mana : int = 0,
 		scale_fact : int | float = 1,
+		weakness : list = [],
+		weapons : list = [],
+		spells : list = [],
 	) -> None:
 		self.name = "???"
-		self.level = 0
-		self._path = f"{ASSETS_PATH}/sprites/default"
+		self.level = level
+		self._path = f"{ASSETS_PATH}/sprites/{type}"
 		self._scale_fact = (scale_fact*X_RATIO, scale_fact*Y_RATIO)
 		self._walk_speed = walk_speed*MAX_RATIO
 		self._max_frames = max_frames
+		self.weakness = weakness
 		self.weapons = list()
 		self.spells = list()
 		self._frame_mult = frame_mult
@@ -35,6 +41,8 @@ class Player:
 		self.is_dead = False
 		self.max_hp = self.hp = max_hp
 		self.max_mana = self.mana = max_mana
+		self.weapons = weapons
+		self.spells = spells
 		self.inventory = Inventory(self)
 		
 	def showStatic(
@@ -285,6 +293,31 @@ class Player:
 		self.hp = self.max_hp = self._last_hp
 		self.mana = self.max_mana = self._last_mana
 		self.level = self._last_level
+
+	def getData(self) -> dict:
+		weapons = [
+			{
+				"class" : "PlayerWeapon",
+				"args": weapon.getData(),
+			} for weapon in self.weapons
+		]
+		spells = [
+			{
+				"class" : "PlayerSpell",
+				"args": spell.getData(),
+			} for spell in self.spells
+		]
+		data = {
+			"type" : self.type,
+			"level" : self.level,
+			"max_frames" : self._max_frames,
+			"max_hp" : self.max_hp,
+			"max_mana" : self.max_mana,
+			"weakness" : self.weakness,
+			"weapons" : weapons,
+			"spells" : spells,
+		}
+		return data
 
 
 class Inventory:

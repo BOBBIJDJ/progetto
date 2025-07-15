@@ -3,10 +3,6 @@
 ## dei livelli del gioco
 '''
 
-import copy
-from typing import Literal
-from functools import reduce
-
 import pygame
 
 import player as pl
@@ -15,7 +11,10 @@ import weapons as wp
 import objects as obj
 import textboxes as tbx
 
-from config import X_RATIO, Y_RATIO, ASSETS_PATH
+from config import (
+    X_RATIO, Y_RATIO, ASSETS_PATH, LOADED, 
+    default_levels_data, loaded_levels_data
+)
 
 MESSAGES = {
     "vittoria" : "Nemico sconfitto! +1 livello, (premere INVIO)",
@@ -99,18 +98,6 @@ class PrimitiveLevel:
         self._objects_ref = objects
         self.passed = False
         self._setBoundMask()
-    
-    def _checkExit(
-        self,
-        player : pl.Player,
-    ) -> bool:
-        if self._exit_point is None:
-            return False
-        
-        if player.rect.collidepoint(self._exit_point):
-            return True
-        else:
-            return False
 
     def _getCharacters(self) -> None:
         self._characters = []
@@ -388,6 +375,24 @@ class Level(PrimitiveLevel):
             
         return (best_attack, damage, player_is_weak)
 
+    def _blitSection(
+        self,
+        screen : pygame.Surface,
+        player : pl.Player,
+        mouse_pos : tuple[int,int],
+        mouse_click : bool,
+    ) -> None:
+        for i, section in enumerate(self._sections):
+            if section is self._current_section:
+                section["text"].changeColor("blue")
+            else:
+                section["text"].changeColor("white")
+            section["text"].show(screen, (74, 390+(33*i)))
+            if (section["text"].rect.collidepoint(mouse_pos)
+                and mouse_click):
+                self._current_section = section
+        self._current_section["func"](screen, player)
+        
 
     def _playBattle(
         self, 
@@ -408,7 +413,7 @@ class Level(PrimitiveLevel):
         player_attacking = False
         enemy_attacking = False
 
-        current_section = self._sections[0]
+        self._current_section = self._sections[0]
 
         message = ""
 
@@ -425,23 +430,13 @@ class Level(PrimitiveLevel):
             screen.blit(self._battle_bg, self._battle_bg_rect)
             self._blitStatus(screen, player, enemy, message)
 
-            for i, section in enumerate(self._sections):
-                if section is current_section:
-                    section["text"].changeColor("blue")
-                else:
-                    section["text"].changeColor("white")
-                section["text"].show(screen, (74, 390+(33*i)))
-                if (section["text"].rect.collidepoint(mouse_pos)
-                    and mouse_buttons[0]):
-                    current_section = section
-
-            current_section["func"](screen, player)
+            self._blitSection(screen, player, mouse_pos, mouse_buttons[0])
 
             # ottenere l'attacco del giocatore
             if ((not player_attacking) 
                 and (not player.is_dead) 
                 and (not enemy.is_dead)):
-                for attack in current_section["attacks"]:
+                for attack in self._current_section["attacks"]:
                     if (attack.box.rect.collidepoint(mouse_pos)
                         and mouse_buttons[0]):
                         if (isinstance(attack, wp.Spell)
@@ -721,8 +716,66 @@ class ClassSelection(PrimitiveLevel):
                 return True
         return False
     
-class StartMenu(PrimitiveLevel):
-    pass
+class StartMenu:
+    def __init__(
+        self,
+        scale_fact : int | float = 1,
+    ) -> None:
+        self._path = f"{ASSETS_PATH}/start_menu"
+        self._scale_fact = (scale_fact*X_RATIO, scale_fact*Y_RATIO)
+        self._bg = pygame.image.load(f"{self._path}/bg.png")
+        self._bg = pygame.transform.scale_by(self._bg, self._scale_fact)
+        self._bg_rect = self._bg.get_rect()
+        self._options = [
+            {
+                "text" : tbx.Text("Nuovo gioco"),
+                "levels" : default_levels_data,
+                "has_collision" : True,
+            },
+            {
+                "text" : tbx.Text(
+                    "Carica Salvataggio", 
+                    font_color=("grey" if not LOADED else "white")
+                ),
+                "levels" : loaded_levels_data,
+                "has_collision" : (True if LOADED else False),
+            }
+        ]
+        self.quit = False
+
+    def getLevels(
+        self,
+        screen : pygame.Surface,
+    ) -> None:
+        running = True
+        while running:
+            
+            mouse_pos = pygame.mouse.get_pos()
+            mouse_buttons = pygame.mouse.get_pressed()
+            events = pygame.event.get()
+            for event in events:
+                if event.type == pygame.QUIT:
+                    self.quit = True
+                    return None
+
+            screen.blit(self._bg, self._bg_rect)
+
+            for i, option in enumerate(self._options):
+                option["text"].show(screen, (256, 229+(i*56)))
+                if option["has_collision"]:
+                    if option["text"].rect.collidepoint(mouse_pos):
+                        option["text"].changeColor("blue")
+                        if mouse_buttons[0]:
+                            self._levels = option["levels"]
+                            running = False
+                            break
+                    else:
+                        option["text"].changeColor("white")
+            
+            pygame.display.flip()
+
+        return self._levels
+
 
 CLASSES = {
     "Level" : Level,

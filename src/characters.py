@@ -64,10 +64,7 @@ class Character:
 		if phrase != '':
 			dialogues.append(phrase)
 		self._dialogue = [
-			tbx.TextBox(
-				"dialogue",
-				dialogue,
-			)  for dialogue in dialogues
+			tbx.TextBox(dialogue)  for dialogue in dialogues
 		]
 		self.page = 0
 		self._max_page = len(self._dialogue)

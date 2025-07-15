@@ -112,7 +112,7 @@ class PlayerWeapon(Weapon):
 		self._setBox()
 
 	def _setBox(self) -> None:
-		self.box = tbx.Box("weapon", (128, 48))
+		self.box = tbx.Box((128, 48))
 		self._name_text = tbx.Text(
 			f"{self._name}", align="center", font_size=9
 		)
@@ -142,6 +142,16 @@ class PlayerWeapon(Weapon):
 		self._rect.center = (pos[0]*X_RATIO, pos[1]*Y_RATIO)
 		screen.blit(self._static, self._rect)
 
+	def getData(self) -> dict:
+		data = {
+			"name" : self._name,
+			"type" : self.type,
+			"damage" : self.damage,
+			"crit" : self.crit,
+			"max_frames" : self._max_frames,
+		}
+		return data
+
 class Spell(Weapon):
 	def __init__(
 		self, 
@@ -170,7 +180,7 @@ class PlayerSpell(Spell):
 		self._setBox()
 
 	def _setBox(self) -> None:
-		self.box = tbx.Box("spell", (128, 48))
+		self.box = tbx.Box((128, 48))
 		self._name_text = tbx.Text(
 			f"{self._name}", align="center", font_size=9
 		)
@@ -200,6 +210,16 @@ class PlayerSpell(Spell):
 	) -> None:
 		self._rect.center = (pos[0]*X_RATIO, pos[1]*Y_RATIO)
 		screen.blit(self._static, self._rect)
+
+	def getData(self) -> dict:
+		data = {
+			"name" : self._name,
+			"type" : self.type,
+			"damage" : self.damage,
+			"effect" : self.effect,
+			"mana" : self.mana,
+		}
+		return data
 
 CLASSES = {
 	"Weapon" : Weapon,

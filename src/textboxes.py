@@ -16,11 +16,9 @@ TEXT_ALIGN = {
 class Box:
     def __init__(
         self,
-        type : str,
         size : tuple[int,int],
         scale_fact : int | float = 1
     ) -> None:
-        self._type = type
         self._size = size
         self._scale_fact = (
             scale_fact*(self._size[0]/254)*X_RATIO, scale_fact*(self._size[1]/105)*Y_RATIO
@@ -93,7 +91,6 @@ class Text:
 class TextBox(Text):
     def __init__(
         self,
-        type : str,
         text : str,
         from_file : bool = False,
         font_color : str = "white",
@@ -106,7 +103,7 @@ class TextBox(Text):
             font_size, align, scale_fact, wrap=True
         )
         box_size = (self._size[0]+16, self._size[1]+16)
-        self._box = Box(type, box_size)
+        self._box = Box(box_size)
 
     def show(
         self, 

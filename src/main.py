@@ -2,7 +2,7 @@
 
 import pygame
 
-from config import SIZE, levels_data
+from config import SIZE, saveState
 import characters as ch
 import player as pl
 import weapons as wp
@@ -17,17 +17,22 @@ clock = pygame.time.Clock()
 max_fps = 60
 
 # inizializzazione del personaggio controllato dal giocatore
-player = pl.Player(max_frames=4)
 
 # contatore frame per la gestione delle animazioni
 frame_count = 0
 
-# inizio del game loop
-running = True
+start_menu = lv.StartMenu()
 
-levels = [
-    lv.CLASSES[level["class"]](**level["args"]) for level in levels_data
-]
+levels_data = start_menu.getLevels(screen)
+
+if not start_menu.quit:
+    player = pl.Player(**(levels_data["player"]))
+    new_data = False
+
+    # inizio del game loop
+    running = True
+else:
+    running = False
 
 while running:
 
@@ -40,13 +45,20 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         
-    for level in levels:
-        if not level.passed:
-            level.playLevel(screen, player, clock, max_fps)
-        if level.quit:
+    for level in levels_data["levels"]:
+        if level["passed"]:
+            continue
+        current_level = lv.CLASSES[level["class"]](**level["args"])
+        if not current_level.passed:
+            current_level.playLevel(screen, player, clock, max_fps)
+        if not current_level.quit:
+            level["passed"] = True
+            levels_data["player"] = player.getData()
+            new_data = True
+        else:
             running = False
             break
-        del level
+        del current_level
     
     # infine si aggiorna la finestra di gioco con le modifiche effettuate
     pygame.display.flip()
@@ -55,5 +67,8 @@ while running:
 
     # si fissa il numero massimo di frame al secondo
     clock.tick(max_fps)
+
+if new_data:
+    saveState(levels_data)
 
 pygame.quit()
