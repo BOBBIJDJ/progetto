@@ -8,9 +8,6 @@ import weapons as wp
 import objects as obj
 import textboxes as tbx
 
-JSON_list = list
-JSON_dict = dict
-
 class Character:
 	def __init__(
 		self, 
@@ -80,9 +77,12 @@ class Character:
 		screen : pygame.Surface,
 		pos : tuple[int, int],
 		) -> None:
-		dialogue_pos = (pos[0], pos[1]-16)
+		if pos[1] >= 256: 
+			dialogue_pos = (256, 128)
+		else:
+			dialogue_pos = (256, 384)
 		if self.page < self._max_page:
-			self._dialogue[self.page].show(screen, pos)
+			self._dialogue[self.page].show(screen, dialogue_pos)
 		else:
 			self.page = 0
 		
@@ -178,8 +178,8 @@ class Enemy(Character):
 		has_collision : bool = True,
 		is_hostile : bool = True,
 		dialogue : str | None = None, 
-		weapons : JSON_list = [],
-		spells : JSON_list = [],
+		weapons : list = [],
+		spells : list = [],
 		weakness : list[str] = [],
 	) -> None:
 		Character.__init__(
@@ -234,8 +234,8 @@ class Subplayer(Character):
 		scale_fact : int | float = 1,
 		has_collision : bool = True,
 		is_hostile : bool = False,
-		weapons : JSON_list = [],
-		spells : JSON_list = [],
+		weapons : list = [],
+		spells : list = [],
 	) -> None:
 		Character.__init__(self, name, type, max_frames, level, frame_mult, scale_fact, has_collision, is_hostile)
 		self.max_hp = max_hp

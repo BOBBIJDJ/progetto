@@ -26,7 +26,7 @@ frame_count = 0
 running = True
 
 levels = [
-    lv.Level(**level) for level in levels_data
+    lv.CLASSES[level["class"]](**level["args"]) for level in levels_data
 ]
 
 while running:
@@ -43,10 +43,10 @@ while running:
     for level in levels:
         if not level.passed:
             level.playLevel(screen, player, clock, max_fps)
-            if level.quit:
-                running = False
-                break
-            del level
+        if level.quit:
+            running = False
+            break
+        del level
     
     # infine si aggiorna la finestra di gioco con le modifiche effettuate
     pygame.display.flip()

@@ -10,8 +10,6 @@ import objects as obj
 import textboxes as tbx
 import weapons as wp
 
-Rotation = Literal["left", "right"]
-
 class Player:
 	
 	def __init__(
@@ -160,19 +158,15 @@ class Player:
 		    align = "center"
 		)
 
-	def addWeapon(
-		self, 
-		key : str, 
-		weapon : wp.Weapon,
+	def addItems(
+		self,
+		items : list[wp.Weapon],
 	) -> None:
-		self.weapons[key] = weapon
-	
-	def addSpell(
-		self, 
-		key : str, 
-		spell : wp.Spell,
-	) -> None:
-		self.spells[key] = spell
+		for item in items:
+			if isinstance(item, wp.Spell):
+				self.spells.append(item)
+			else:
+				self.weapons.append(item)
 
 	def setPos(
 		self, 
@@ -245,7 +239,7 @@ class Player:
 		self,
 		attack : wp.Weapon,
 		enemy : ch.Enemy,
-	) -> int:
+	) -> tuple[int, bool]:
 		enemy_is_weak = False
 		if isinstance(attack, wp.Spell):
 			if (attack.effect in enemy.weakness):
@@ -260,7 +254,7 @@ class Player:
 			    * (self.level / enemy.level)
 			    * (2 if enemy_is_weak else 1)
 			)
-		return damage
+		return (damage, enemy_is_weak)
 	
 	def getDamage(
 		self,

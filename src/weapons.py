@@ -4,7 +4,6 @@ from typing import Literal
 import pygame
 
 from config import X_RATIO, Y_RATIO, ASSETS_PATH
-import objects as obj
 import textboxes as tbx
 
 Rotation = Literal["left", "right"]

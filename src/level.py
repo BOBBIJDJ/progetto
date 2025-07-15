@@ -17,22 +17,18 @@ import textboxes as tbx
 
 from config import X_RATIO, Y_RATIO, ASSETS_PATH
 
-JSON_list = list
-Rotation = Literal["left", "right"]
-CharacterSet = list[
-    dict[
-        str, 
-        ch.Character | tuple[int, int] | Literal["left", "right"]
-    ]
-]
-ObjectSet = list[
-    dict[
-        str, 
-        obj.Object | tuple[int, int]
-    ]
-]
+MESSAGES = {
+    "vittoria" : "Nemico sconfitto! +1 livello, (premere INVIO)",
+    "rigenerato" : "Ti sei rigenerato",
+    "critico" : "Colpo critico!",
+    "super" : "Colpo superefficace!",
+    "morto" : "Sei morto! (premere INVIO)",
+    "nemico_rigenerato" : "Il nemico si è rigenerato",
+    "nemico_critico" : "Hai subito un colpo critico!",
+    "nemic_super" : "Hai subito un colpo superefficace",
+}
 
-class Level:
+class PrimitiveLevel:
     '''
     ## Una classe per rappresentare i livelli del gioco.
 
@@ -48,13 +44,10 @@ class Level:
     def __init__(
         self,
         name : str,
-        is_menu : bool = False,
-        has_fog : bool = False,
+        start_pos : tuple[int, int], 
         scale_fact : int | float = 1,
-        start_pos : tuple[int, int] = (256, 256), 
-        characters : JSON_list = [], 
-        objects : JSON_list = [],
-        dialogues : JSON_list = [],
+        characters : list = [],
+        objects : list = [],
     ) -> None:
         '''
         ## Inizializza un oggetto Livello -> None
@@ -101,24 +94,26 @@ class Level:
         self._bg = pygame.image.load(f"{self._path}/bg.png")
         self._bg = pygame.transform.scale_by(self._bg, self._scale_fact)
         self._bg_rect = self._bg.get_rect()
-        self._battle_bg = pygame.image.load(f"{ASSETS_PATH}/battle/bg.png")
-        self._battle_bg = pygame.transform.scale_by(self._battle_bg, self._scale_fact)
-        self._battle_bg_rect = self._bg_rect
-        self._hp_bar = pygame.image.load(f"{ASSETS_PATH}/hp/hp.png")
-        self._hp_bar = pygame.transform.scale_by(self._hp_bar, self._scale_fact)
         self._player_start_pos = start_pos
-        self._characters_ref = characters # [{"type" : NPC1, "pos" : (x,y), "rot" : rot}, ...]
-        self._objects_ref = objects # [{"type" : obj1, "pos" : (x,y)}, ...] 
-        self._dialogues_ref = dialogues
+        self._characters_ref = characters 
+        self._objects_ref = objects
         self.passed = False
-        self._is_menu = is_menu
-        self._has_fog = has_fog
         self._setBoundMask()
-        if self._has_fog:
-            self._setFog()
+    
+    def _checkExit(
+        self,
+        player : pl.Player,
+    ) -> bool:
+        if self._exit_point is None:
+            return False
+        
+        if player.rect.collidepoint(self._exit_point):
+            return True
+        else:
+            return False
 
-    def _getCharacters(self):
-        self._characters : CharacterSet = []
+    def _getCharacters(self) -> None:
+        self._characters = []
         for character in self._characters_ref:
             class_ = character["type"]["class"]
             kwargs = character["type"]["args"]
@@ -127,24 +122,14 @@ class Level:
                 "pos" : character["pos"],
                 "rot" : character["rot"],
             })
-            
-    def _getObjects(self):
-        self._objects : ObjectSet= []
+
+    def _getObjects(self) -> None:
+        self._objects = []
         for object in self._objects_ref:
-            class_ = object["type"]["class"]
             kwargs = object["type"]["args"]
             self._objects.append({
-                "type" : obj.CLASSES[class_](**kwargs),
+                "type" : obj.Chest(**kwargs),
                 "pos" : object["pos"],
-            })
-        
-    def _getDialogues(self):
-        self._dialogues = []
-        for box in self._dialogues_ref:
-            class_ = box["type"]["class"]
-            kwargs = box["type"]["args"]
-            self._dialogues.append({
-                "type" : tbx.CLASSES[class_](**kwargs),
             })
 
     def _setBoundMask(self) -> None:
@@ -168,31 +153,6 @@ class Level:
             return False
         else:
             return True
-    
-    def _setFog(self) -> None:
-        '''
-        ## Imposta la maschera per la visuale oscurata -> None
-        '''
-        self._fog_bg = pygame.image.load(f"{ASSETS_PATH}/fog/fog.png")
-        self._fog_bg = pygame.transform.scale_by(self._fog_bg, self._scale_fact)
-        fog_circle = pygame.image.load(f"{ASSETS_PATH}/fog/circle.png")
-        fog_circle = pygame.transform.scale_by(fog_circle, self._scale_fact)
-        self.fog_circle_mask = pygame.mask.from_surface(fog_circle)
-
-    def _setFogPos(
-        self, 
-        screen : pygame.Surface, 
-        pos : tuple[int, int],
-    ) -> None:
-        '''
-        ## Sposta la maschera per la visuale oscurata -> None
-        '''
-        self._fog_mask = pygame.mask.from_surface(self._fog_bg)
-        self._fog_mask.erase(self.fog_circle_mask, (pos[0] - 64, pos[1] - 64))
-        self._fog_mask.invert()
-        self._fog_mask_surf = self._fog_mask.to_surface()
-        self._fog_mask_surf.set_colorkey((255,255,255))
-        screen.blit(self._fog_mask_surf, self._bg_rect)
 
     def _setLevel(
         self, 
@@ -204,7 +164,6 @@ class Level:
         '''
         self._getCharacters()
         self._getObjects()
-        self._getDialogues()
         screen.blit(self._bg, self._bg_rect)
         player.setPos(
             screen,
@@ -248,100 +207,78 @@ class Level:
             return True
         else:
             return False
+        
+    def _checkEvents(self) -> None:
+        events = pygame.event.get()
+        for event in events:
+            if event.type == pygame.QUIT:
+                self.quit = True
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_i:
+                    self._in_inventory = not self._in_inventory
+                elif event.key == pygame.K_RETURN:
+                    self._next_page = not self._next_page
 
-    def playLevel(
+class Level(PrimitiveLevel):
+    def __init__(
+        self,
+        name : str,
+        exit_point : tuple[int, int],
+        start_pos : tuple[int, int],
+        has_fog : bool = False,
+        scale_fact : int | float = 1,
+        characters : list = [],
+        objects : list = [],
+    ) -> None:
+        PrimitiveLevel.__init__(
+            self, name, start_pos, scale_fact, characters, objects
+        )
+        self._battle_bg = pygame.image.load(f"{ASSETS_PATH}/battle/bg.png")
+        self._battle_bg = pygame.transform.scale_by(self._battle_bg, self._scale_fact)
+        self._battle_bg_rect = self._bg_rect
+        self._hp_bar = pygame.image.load(f"{ASSETS_PATH}/hp/hp.png")
+        self._hp_bar = pygame.transform.scale_by(self._hp_bar, self._scale_fact)
+        self._has_fog = has_fog
+        self._exit_point = exit_point
+        if self._has_fog:
+            self._setFog()
+
+    def _checkExit(
+        self,
+        player : pl.Player,
+    ) -> bool:
+        if self._exit_point is None:
+            return False
+        
+        if player.rect.collidepoint(self._exit_point):
+            return True
+        else:
+            return False
+
+    def _setFog(self) -> None:
+        '''
+        ## Imposta la maschera per la visuale oscurata -> None
+        '''
+        self._fog_bg = pygame.image.load(f"{ASSETS_PATH}/fog/fog.png")
+        self._fog_bg = pygame.transform.scale_by(self._fog_bg, self._scale_fact)
+        fog_circle = pygame.image.load(f"{ASSETS_PATH}/fog/circle.png")
+        fog_circle = pygame.transform.scale_by(fog_circle, self._scale_fact)
+        self.fog_circle_mask = pygame.mask.from_surface(fog_circle)
+
+    def _setFogPos(
         self, 
-        screen : pygame.Surface,
-        player : pl.Player, 
-        clock : pygame.Clock, 
-        max_fps : int,
+        screen : pygame.Surface, 
+        pos : tuple[int, int],
     ) -> None:
         '''
-        ## Riproduce il sub-gameloop relativo al livello -> None
+        ## Sposta la maschera per la visuale oscurata -> None
         '''
-        self._setLevel(screen, player)
-        frame = 0
-        level_passed = False
-        self.quit = False
-        self._in_inventory = False
-        next_page = False
-        last_page = False
-        
-        player.saveState()
-
-        while ((not self.quit) 
-               and (not level_passed) 
-        ):
-            if player.is_dead:
-                self._setLevel(screen, player)
-                player.reset()
-            
-            events = pygame.event.get()
-            keys = pygame.key.get_pressed()
-            for event in events:
-                if event.type == pygame.QUIT:
-                    self.quit = True
-                elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_i:
-                        self._in_inventory = not self._in_inventory
-                    elif event.key == pygame.K_RETURN:
-                        next_page = not next_page
-
-            self._blitLevel(screen, frame)
-            
-            player.getNextPos(keys)
-            
-            self._can_move = self._canMove(player)
-
-            if self._can_move:
-                player.move(screen, frame)
-            else:
-                player.idle(screen, frame,)
-
-            if self._is_menu:
-                level_passed = self._chooseClass(player, keys)
-
-            for character in self._characters:
-                if (character["type"].has_collision
-                    and player.rect.colliderect(character["type"].rect)
-                ):
-                    if character["type"].is_hostile:
-                        player_last_pos = player.rect.center
-                        enemy_pos = character["type"].rect.center
-                        self._playBattle(
-                            screen, player, character["type"], clock, max_fps
-                        )
-                        player.setPos(screen, player_last_pos)
-                        character["type"].setPos(
-                            screen, enemy_pos, character["rot"]
-                        )
-                    elif character["type"].has_dialogue:
-                        character["type"].blitDialogue(screen, character["pos"])
-                        if next_page != last_page:
-                            character["type"].page += 1
-                            last_page = next_page
-
-            for object in self._objects:
-                if (object["type"].has_collision 
-                    and player.rect.colliderect(object["type"].rect)
-                ):
-                    object["type"].collision()
-            
-            if self._has_fog:
-                self._setFogPos(screen, player.rect.center)
-            
-            for dialogue in self._dialogues:
-                dialogue["box"].show(screen, dialogue["pos"])
-
-            if self._in_inventory:
-                player.inventory.show(screen)
-
-            pygame.display.flip()
-            frame += 1
-            clock.tick(max_fps)
-            
-        if not self.quit:
-            self.passed = True
+        self._fog_mask = pygame.mask.from_surface(self._fog_bg)
+        self._fog_mask.erase(self.fog_circle_mask, (pos[0] - 64, pos[1] - 64))
+        self._fog_mask.invert()
+        self._fog_mask_surf = self._fog_mask.to_surface()
+        self._fog_mask_surf.set_colorkey((255,255,255))
+        screen.blit(self._fog_mask_surf, self._bg_rect)
 
     def _showHpBar(
         self,
@@ -400,7 +337,7 @@ class Level:
         self,
         player : pl.Player,
         enemy : ch.Enemy,
-    ) -> tuple[wp.Weapon, int]:
+    ) -> tuple[wp.Weapon, int, bool]:
         best_damage = 0
         for weapon in enemy.weapons:
             if weapon.damage >= player.hp:
@@ -449,7 +386,7 @@ class Level:
                 * (2 if player_is_weak else 1)
             )
             
-        return (best_attack, damage)
+        return (best_attack, damage, player_is_weak)
 
 
     def _playBattle(
@@ -512,12 +449,14 @@ class Level:
                             message = "Non hai abbastanza mana"
                         else:
                             message = ""
-                            player_damage = (
+                            player_damage, enemy_is_weak = (
                                 player.getAttackDamage(attack, enemy)
                             )
                             player_attack = attack
 
-                            enemy_attack, enemy_damage = self._getEnemyAttack(player, enemy)
+                            enemy_attack, enemy_damage, player_is_weak = (
+                                self._getEnemyAttack(player, enemy)
+                            )
 
                             enemy_inflicted = False
                             player_inflicted = False
@@ -530,9 +469,11 @@ class Level:
                     enemy.getDamage(player_damage)
                     enemy_inflicted = True
                 message = (
-                    "Nemico sconfitto! +1 livello, (premere INVIO)" if enemy.is_dead else (
-                        "Ti sei rigenerato" if player_attack.type == "cure" else (
-                            "Colpo critico!" if player_attack.critical else ""
+                    MESSAGES["vittoria"] if enemy.is_dead else (
+                        MESSAGES["rigenerato"] if player_attack.type == "cure" else (
+                            MESSAGES["critico"] if player_attack.critical else (
+                                MESSAGES["super"] if enemy_is_weak else ""
+                            )
                         )
                     )
                 )    
@@ -544,9 +485,11 @@ class Level:
                     player.getDamage(enemy_damage)
                     player_inflicted = True
                 message = (
-                    "Sei morto! (premere INVIO)" if player.is_dead else (
-                        "Il nemico si è rigenerato" if enemy_attack.type == "cure" else (
-                            "Hai subito un colpo critico!" if enemy_attack.critical else ""
+                    MESSAGES["morto"] if player.is_dead else (
+                        MESSAGES["nemico_rigenerato"] if enemy_attack.type == "cure" else (
+                            MESSAGES["nemico_critico"] if enemy_attack.critical else (
+                                MESSAGES["nemic_super"] if player_is_weak else ""
+                            )
                         )
                     )
                 )
@@ -624,6 +567,143 @@ class Level:
         enemy.level_text.show(screen, (304, 41))
         self._showHpBar(screen, enemy)
 
+    def playLevel(
+        self, 
+        screen : pygame.Surface,
+        player : pl.Player, 
+        clock : pygame.Clock, 
+        max_fps : int,
+    ) -> None:
+        '''
+        ## Riproduce il sub-gameloop relativo al livello -> None
+        '''
+        self._setLevel(screen, player)
+        frame = 0
+        self.quit = False
+        self._in_inventory = False
+        self._next_page = False
+        last_page = False
+        
+        player.saveState()
+
+        while ((not self.quit) 
+               and (not self.passed) 
+        ):
+            if player.is_dead:
+                self._setLevel(screen, player)
+                player.reset()
+            
+            keys = pygame.key.get_pressed()
+            self._checkEvents()
+
+            self._blitLevel(screen, frame)
+            
+            player.getNextPos(keys)
+            
+            self._can_move = self._canMove(player)
+
+            if self._can_move:
+                player.move(screen, frame)
+            else:
+                player.idle(screen, frame)
+
+            for character in self._characters:
+                if (character["type"].has_collision
+                    and player.rect.colliderect(character["type"].rect)
+                ):
+                    if character["type"].is_hostile:
+                        player_last_pos = player.rect.center
+                        enemy_pos = character["type"].rect.center
+                        self._playBattle(
+                            screen, player, character["type"], clock, max_fps
+                        )
+                        player.setPos(screen, player_last_pos)
+                        character["type"].setPos(
+                            screen, enemy_pos, character["rot"]
+                        )
+                    elif character["type"].has_dialogue:
+                        character["type"].blitDialogue(screen, character["pos"])
+                        if self._next_page != last_page:
+                            character["type"].page += 1
+                            last_page = self._next_page
+
+            for object in self._objects:
+                if (object["type"].has_collision 
+                    and player.rect.colliderect(object["type"].rect)
+                ):
+                    player.addItems(object["type"].items)
+                    object["type"].collision()
+            
+            if self._has_fog:
+                self._setFogPos(screen, player.rect.center)
+
+            if self._in_inventory:
+                player.inventory.show(screen)
+
+            if self._checkExit(player):
+                self.passed = True
+
+            pygame.display.flip()
+            frame += 1
+            clock.tick(max_fps)
+    
+class ClassSelection(PrimitiveLevel):
+    def __init__(
+        self,
+        name : str,
+        start_pos : tuple[int, int],
+        scale_fact : int | float = 1,
+        characters : list = [],
+    ) -> None:
+        PrimitiveLevel.__init__(self, name, start_pos, scale_fact, characters)
+
+    def playLevel(
+        self, 
+        screen : pygame.Surface,
+        player : pl.Player, 
+        clock : pygame.Clock, 
+        max_fps : int,
+    ) -> None:
+        '''
+        ## Riproduce il sub-gameloop relativo al livello di scelta delle classi -> None
+        '''
+        self._setLevel(screen, player)
+        frame = 0
+        self.quit = False
+        self._in_inventory = False
+        
+        player.saveState()
+
+        while ((not self.quit) 
+               and (not self.passed) 
+        ):
+            if player.is_dead:
+                self._setLevel(screen, player)
+                player.reset()
+            
+            keys = pygame.key.get_pressed()
+        
+            self._checkEvents()
+
+            self._blitLevel(screen, frame)
+            
+            player.getNextPos(keys)
+            
+            self._can_move = self._canMove(player)
+
+            if self._can_move:
+                player.move(screen, frame)
+            else:
+                player.idle(screen, frame,)
+
+            self.passed = self._chooseClass(player, keys)
+
+            if self._in_inventory:
+                player.inventory.show(screen)
+
+            pygame.display.flip()
+            frame += 1
+            clock.tick(max_fps)
 
     def _chooseClass(
         self,  
@@ -640,3 +720,12 @@ class Level:
                 player.setPlayerClass(character["type"])
                 return True
         return False
+    
+class StartMenu(PrimitiveLevel):
+    pass
+
+CLASSES = {
+    "Level" : Level,
+    "ClassSelection" : ClassSelection,
+    "StartMenu" : StartMenu,
+}

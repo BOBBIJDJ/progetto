@@ -1,181 +1,201 @@
-[
+[   
+    {   
+        "class" : "ClassSelection",
+        "args" : {
+            "name" : "class_selection",
+            "start_pos" : [32, 32],
+            "characters" : [
+                {
+                    "type" : {
+                        "class" : "Subplayer",
+                        "args" : {
+                            "name" : "Cavaliere",
+                            "type" : "knight",
+                            "max_hp" : 100,
+                            "max_mana" : 30,
+                            "max_frames" : 4,
+                            "weakness" : [
+                                "erba"
+                            ]
+                        }
+                    }, 
+                    "pos" : [256, 240], 
+                    "rot" : "left"
+                },
+                {
+                    "type" : {
+                        "class" : "Subplayer",
+                        "args" : {
+                            "name" : "Mago Merlino",
+                            "type" : "mage",
+                            "max_hp" : 200,
+                            "max_mana" : 50,
+                            "max_frames" : 4,
+                            "weakness" : [
+                                "aria"
+                            ],
+                            "weapons" : [
+                                {
+                                    "class" : "PlayerWeapon",
+                                    "args" : {
+                                        "name" : "Ascia vichinga",
+                                        "type" : "axe",
+                                        "damage" : 20,
+                                        "crit" : 5,
+                                        "max_frames" : 4
+                                    } 
+                                },
+                                {
+                                    "class" : "PlayerWeapon",
+                                    "args" : {
+                                        "name" : "Arco semplice",
+                                        "type" : "bow",
+                                        "damage" : 25,
+                                        "crit" : 10,
+                                        "max_frames" : 5
+                                    } 
+                                },
+                                {
+                                    "class" : "PlayerWeapon",
+                                    "args" : {
+                                        "name" : "Spadone lungo",
+                                        "type" : "sword",
+                                        "damage" : 40,
+                                        "crit" : 10,
+                                        "max_frames" : 8
+                                    } 
+                                },
+                                {
+                                    "class" : "PlayerWeapon",
+                                    "args" : {
+                                        "name" : "Machete",
+                                        "type" : "machete",
+                                        "damage" : 15,
+                                        "crit" : 20,
+                                        "max_frames" : 4
+                                    } 
+                                }
+                            ],
+                            "spells" : [
+                                {
+                                    "class" : "PlayerSpell",
+                                    "args" : {
+                                        "name" : "Sfera di fuoco",
+                                        "type" : "fire",
+                                        "damage" : 30,
+                                        "effect" : "fuoco",
+                                        "mana" : 20
+                                    } 
+                                },
+                                {
+                                    "class" : "PlayerSpell",
+                                    "args" : {
+                                        "name" : "+20% hp",
+                                        "type" : "cure",
+                                        "damage" : 0,
+                                        "effect" : "cura",
+                                        "mana" : 20
+                                    } 
+                                },
+                                {
+                                    "class" : "PlayerSpell",
+                                    "args" : {
+                                        "name" : "Vortice",
+                                        "type" : "air",
+                                        "damage" : 45,
+                                        "effect" : "aria",
+                                        "mana" : 25
+                                    } 
+                                }
+                            ]
+                        }
+                    },
+                    "pos" : [336,240], 
+                    "rot" : "left"
+                },
+                {
+                    "type" : {
+                        "class" : "Subplayer",
+                        "args" : {
+                            "name" : "Robin Hood",
+                            "type" : "archer",
+                            "max_hp" : 100,
+                            "max_mana" : 30,
+                            "max_frames" : 4,
+                            "weakness" : [
+                                "fuoco"
+                            ]
+                        }
+                    }, 
+                    "pos" : [176, 240], 
+                    "rot" : "left"
+                }
+            ]
+        }
+    },    
     {
-        "name" : "menu",
-        "is_menu" : true,
-        "start_pos" : [32, 32],
-        "characters" : [
-            {
-                "type" : {
-                    "class" : "Subplayer",
-                    "args" : {
-                        "name" : "Cavaliere",
-                        "type" : "knight",
-                        "max_hp" : 100,
-                        "max_mana" : 30,
-                        "max_frames" : 4,
-                        "weakness" : [
-                            "erba"
-                        ]
-                    }
-                }, 
-                "pos" : [256, 240], 
-                "rot" : "left"
-            },
-            {
-                "type" : {
-                    "class" : "Subplayer",
-                    "args" : {
-                        "name" : "Mago Merlino",
-                        "type" : "mage",
-                        "max_hp" : 200,
-                        "max_mana" : 50,
-                        "max_frames" : 4,
-                        "weakness" : [
-                            "aria"
-                        ],
-                        "weapons" : [
-                            {
-                                "class" : "PlayerWeapon",
-                                "args" : {
-                                    "name" : "Ascia vichinga",
-                                    "type" : "axe",
-                                    "damage" : 20,
-                                    "crit" : 5,
-                                    "max_frames" : 4
-                                } 
-                            },
-                            {
-                                "class" : "PlayerWeapon",
-                                "args" : {
-                                    "name" : "Arco semplice",
-                                    "type" : "bow",
-                                    "damage" : 25,
-                                    "crit" : 10,
-                                    "max_frames" : 5
-                                } 
-                            },
-                            {
-                                "class" : "PlayerWeapon",
-                                "args" : {
-                                    "name" : "Spadone lungo",
-                                    "type" : "sword",
-                                    "damage" : 40,
-                                    "crit" : 10,
-                                    "max_frames" : 8
-                                } 
-                            },
-                            {
-                                "class" : "PlayerWeapon",
-                                "args" : {
-                                    "name" : "Machete",
-                                    "type" : "machete",
-                                    "damage" : 15,
-                                    "crit" : 20,
-                                    "max_frames" : 4
-                                } 
-                            }
-                        ],
-                        "spells" : [
-                            {
-                                "class" : "PlayerSpell",
-                                "args" : {
-                                    "name" : "Sfera di fuoco",
-                                    "type" : "fire",
-                                    "damage" : 30,
-                                    "effect" : "fuoco",
-                                    "mana" : 20
-                                } 
-                            },
-                            {
-                                "class" : "PlayerSpell",
-                                "args" : {
-                                    "name" : "+20% hp",
-                                    "type" : "cure",
-                                    "damage" : 0,
-                                    "effect" : "cura",
-                                    "mana" : 20
-                                } 
-                            },
-                            {
-                                "class" : "PlayerSpell",
-                                "args" : {
-                                    "name" : "Vortice",
-                                    "type" : "air",
-                                    "damage" : 45,
-                                    "effect" : "aria",
-                                    "mana" : 25
-                                } 
-                            }
-                        ]
-                    }
-                },
-                "pos" : [336,240], 
-                "rot" : "left"
-            },
-            {
-                "type" : {
-                    "class" : "Subplayer",
-                    "args" : {
-                        "name" : "Robin Hood",
-                        "type" : "archer",
-                        "max_hp" : 100,
-                        "max_mana" : 30,
-                        "max_frames" : 4,
-                        "weakness" : [
-                            "fuoco"
-                        ]
-                    }
-                }, 
-                "pos" : [176, 240], 
-                "rot" : "left"
-            }
-        ]
-    },
-    {
-        "name" : "maze",
-        "has_fog" : false,
-        "start_pos" : [256, 480],
-        "characters" : [
-            {
-                "type" : {
-                    "class" : "Enemy",
-                    "args" : {
-                        "name" : "Nemico",
-                        "type" : "dragon",
-                        "max_hp" : 200,
-                        "max_mana" : 30,
-                        "weakness" : [
-                            "ice"
-                        ],
-                        "level" : 1,
-                        "max_frames" : 4,
-                        "dialogue" : "testo0",
-                        "weapons" : [
-                            {
-                                "class" : "Weapon",
-                                "args" : {
-                                    "name" : "Ascia vichinga",
-                                    "type" : "axe",
-                                    "damage" : 20,
-                                    "crit" : 5,
-                                    "max_frames" : 4
-                                } 
-                            }
-                        ]
-                    }
-                },
-                "pos" : [256, 256],
-                "rot" : "right"
-            }
-        ],
-        "objects" : [
-            {
-                "type" : {
-                    "class" : "Chest",
-                    "args" : {}
-                },
-                "pos" : [400, 400]
-            }
-        ]
+        "class" : "Level", 
+        "args" : {
+            "name" : "maze",
+            "exit_point" : null,
+            "has_fog" : false,
+            "start_pos" : [256, 480],
+            "characters" : [
+                {
+                    "type" : {
+                        "class" : "Enemy",
+                        "args" : {
+                            "name" : "Nemico",
+                            "type" : "dragon",
+                            "max_hp" : 200,
+                            "max_mana" : 30,
+                            "weakness" : [
+                                "fuoco"
+                            ],
+                            "level" : 1,
+                            "max_frames" : 4,
+                            "dialogue" : "testo0",
+                            "weapons" : [
+                                {
+                                    "class" : "Weapon",
+                                    "args" : {
+                                        "name" : "Ascia vichinga",
+                                        "type" : "axe",
+                                        "damage" : 20,
+                                        "crit" : 5,
+                                        "max_frames" : 4
+                                    } 
+                                }
+                            ]
+                        }
+                    },
+                    "pos" : [256, 256],
+                    "rot" : "right"
+                }
+            ],
+            "objects" : [
+                {
+                    "type" : {
+                        "class" : "Chest",
+                        "args" : {
+                            "has_collision" : true,
+                            "items" : [
+                                {
+                                    "class" : "PlayerSpell",
+                                    "args" : {
+                                        "name" : "skibidi",
+                                        "type" : "ice",
+                                        "damage" : 100,
+                                        "effect" : "boppi",
+                                        "mana" : 10
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "pos" : [400, 400]
+                }
+            ]
+        }
     }
 ]
