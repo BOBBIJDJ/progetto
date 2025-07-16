@@ -2,12 +2,8 @@
 
 import pygame
 
-from config import SIZE, saveState
-import characters as ch
+from config import SIZE, saveState, ASSETS_PATH
 import player as pl
-import weapons as wp
-import objects as obj
-import textboxes as tbx
 import level as lv
 
 # inizializzazione della finestra di gioco
@@ -15,8 +11,6 @@ pygame.init()
 screen = pygame.display.set_mode(SIZE)
 clock = pygame.time.Clock()
 max_fps = 60
-
-# inizializzazione del personaggio controllato dal giocatore
 
 # contatore frame per la gestione delle animazioni
 frame_count = 0
@@ -28,7 +22,7 @@ levels_data = start_menu.getLevels(screen)
 if not start_menu.quit:
     player = pl.Player(**(levels_data["player"]))
     new_data = False
-
+    
     # inizio del game loop
     running = True
 else:

@@ -8,7 +8,8 @@
             "passed" : false,
             "args" : {
                 "name" : "class_selection",
-                "start_pos" : [32, 32],
+                "music" : "dungeon",
+                "start_pos" : [256, 480],
                 "characters" : [
                     {
                         "type" : {
@@ -16,68 +17,54 @@
                             "args" : {
                                 "name" : "Cavaliere",
                                 "type" : "knight",
-                                "max_hp" : 100,
-                                "max_mana" : 30,
+                                "max_hp" : 150,
+                                "max_mana" : 25,
+                                "hp_mult" : 2,
+                                "mana_mult" : 0.5,
                                 "max_frames" : 4,
                                 "weakness" : [
                                     "erba"
+                                ],
+                                "weapons" : [
+                                    {
+                                        "class" : "PlayerWeapon",
+                                        "args" : {
+                                            "name" : "Martello",
+                                            "type" : "hammer",
+                                            "damage" : 30,
+                                            "crit" : 20,
+                                            "max_frames" : 4
+                                        }
+                                    }
                                 ]
                             }
                         }, 
-                        "pos" : [256, 240], 
+                        "pos" : [256, 368], 
                         "rot" : "left"
                     },
                     {
                         "type" : {
                             "class" : "Subplayer",
                             "args" : {
-                                "name" : "Mago Merlino",
+                                "name" : "Mago",
                                 "type" : "mage",
-                                "max_hp" : 200,
+                                "max_hp" : 80,
                                 "max_mana" : 50,
+                                "hp_mult" : 1,
+                                "mana_mult" : 3,
                                 "max_frames" : 4,
                                 "weakness" : [
-                                    "aria"
+                                    "dirt"
                                 ],
                                 "weapons" : [
                                     {
                                         "class" : "PlayerWeapon",
                                         "args" : {
-                                            "name" : "Ascia vichinga",
-                                            "type" : "axe",
-                                            "damage" : 20,
-                                            "crit" : 5,
-                                            "max_frames" : 4
-                                        } 
-                                    },
-                                    {
-                                        "class" : "PlayerWeapon",
-                                        "args" : {
-                                            "name" : "Arco semplice",
-                                            "type" : "bow",
-                                            "damage" : 25,
-                                            "crit" : 10,
-                                            "max_frames" : 5
-                                        } 
-                                    },
-                                    {
-                                        "class" : "PlayerWeapon",
-                                        "args" : {
-                                            "name" : "Spadone lungo",
-                                            "type" : "sword",
-                                            "damage" : 40,
-                                            "crit" : 10,
-                                            "max_frames" : 8
-                                        } 
-                                    },
-                                    {
-                                        "class" : "PlayerWeapon",
-                                        "args" : {
-                                            "name" : "Machete",
-                                            "type" : "machete",
+                                            "name" : "Pugnale",
+                                            "type" : "dagger",
                                             "damage" : 15,
-                                            "crit" : 20,
-                                            "max_frames" : 4
+                                            "crit" : 30,
+                                            "max_frames" : 8
                                         } 
                                     }
                                 ],
@@ -87,35 +74,15 @@
                                         "args" : {
                                             "name" : "Sfera di fuoco",
                                             "type" : "fire",
-                                            "damage" : 30,
+                                            "damage" : 35,
                                             "effect" : "fuoco",
-                                            "mana" : 20
-                                        } 
-                                    },
-                                    {
-                                        "class" : "PlayerSpell",
-                                        "args" : {
-                                            "name" : "+20% hp",
-                                            "type" : "cure",
-                                            "damage" : 0,
-                                            "effect" : "cura",
-                                            "mana" : 20
-                                        } 
-                                    },
-                                    {
-                                        "class" : "PlayerSpell",
-                                        "args" : {
-                                            "name" : "Vortice",
-                                            "type" : "air",
-                                            "damage" : 45,
-                                            "effect" : "aria",
                                             "mana" : 25
                                         } 
                                     }
                                 ]
                             }
                         },
-                        "pos" : [336,240], 
+                        "pos" : [336, 368], 
                         "rot" : "left"
                     },
                     {
@@ -124,25 +91,478 @@
                             "args" : {
                                 "name" : "Robin Hood",
                                 "type" : "archer",
-                                "max_hp" : 100,
-                                "max_mana" : 30,
+                                "level" : 1,
+                                "max_hp" : 120,
+                                "max_mana" : 35,
+                                "hp_mult" : 1.5,
+                                "mana_mult" : 1.5,
                                 "max_frames" : 4,
                                 "weakness" : [
                                     "fuoco"
+                                ],
+                                "weapons" : [
+                                    {
+                                        "class" : "PlayerWeapon",
+                                        "args" : {
+                                            "name" : "Arco semplice",
+                                            "type" : "bow",
+                                            "damage" : 20,
+                                            "crit" : 30,
+                                            "max_frames" : 5
+                                        }
+                                    }
                                 ]
                             }
                         }, 
-                        "pos" : [176, 240], 
+                        "pos" : [176, 368], 
                         "rot" : "left"
                     }
                 ]
             }
         },    
         {
+            "class" : "Level",
+            "passed" : false,
+            "args" : {
+                "name" : "forest",
+                "music" : "forest",
+                "exit_point" : [496, 256],
+                "start_pos" : [32, 256],
+                "characters" : [
+                    {
+                        "type" : {
+                            "class" : "NPC",
+                            "args" : {
+                                "name" : "Re di Pytopia",
+                                "type" : "king",
+                                "max_frames" : 4,
+                                "dialogue" : "king"
+                            }
+                        },
+                        "pos" : [112, 256],
+                        "rot" : "left"
+                    },
+                    {
+                        "type" : {
+                            "class" : "Enemy",
+                            "args" : {
+                                "name" : "Orco",
+                                "type" : "orc",
+                                "max_hp" : 50,
+                                "max_mana" : 0,
+                                "weakness" : [
+                                    "acqua"
+                                ],
+                                "level" : 1,
+                                "max_frames" : 4,
+                                "weapons" : [
+                                    {
+                                        "class" : "Weapon",
+                                        "args" : {
+                                            "name" : "Machete",
+                                            "type" : "machete",
+                                            "damage" : 5,
+                                            "crit" : 15,
+                                            "max_frames" : 4
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "pos" : [184, 72],
+                        "rot" : "left"
+                    },
+                    {
+                        "type" : {
+                            "class" : "Enemy",
+                            "args" : {
+                                "name" : "Centauro",
+                                "type" : "centaur",
+                                "max_hp" : 100,
+                                "max_mana" : 20,
+                                "weakness" : [
+                                    "fuoco"
+                                ],
+                                "level" : 2,
+                                "max_frames" : 4,
+                                "weapons" : [
+                                    {
+                                        "class" : "Weapon",
+                                        "args" : {
+                                            "name" : "arco semplice",
+                                            "type" : "bow",
+                                            "damage" : 15,
+                                            "crit" : 50,
+                                            "max_frames" : 4
+                                        }
+                                    },
+                                    {
+                                        "class" : "Spell",
+                                        "args" : {
+                                            "name" : "palla di neve",
+                                            "type" : "ice",
+                                            "damage" : 20,
+                                            "mana": 20,
+                                            "effect" : "ghiaccio"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "pos" : [416, 144],
+                        "rot" : "right"
+                    },
+                    {
+                        "type" : {
+                            "class" : "Enemy",
+                            "args" : {
+                                "name" : "Orco",
+                                "type" : "orc",
+                                "max_hp" : 100,
+                                "max_mana" : 0,
+                                "weakness" : [
+                                    "acqua"
+                                ],
+                                "level" : 3,
+                                "max_frames" : 4,
+                                "weapons" : [
+                                    {
+                                        "class" : "Weapon",
+                                        "args" : {
+                                            "name" : "Machete",
+                                            "type" : "machete",
+                                            "damage" : 20,
+                                            "crit" : 30,
+                                            "max_frames" : 4
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "pos" : [80, 448],
+                        "rot" : "right"
+                    },
+                    {
+                        "type" : {
+                            "class" : "Enemy",
+                            "args" : {
+                                "name" : "Orco",
+                                "type" : "orc",
+                                "max_hp" : 100,
+                                "max_mana" : 0,
+                                "weakness" : [
+                                    "acqua"
+                                ],
+                                "level" : 3,
+                                "max_frames" : 4,
+                                "weapons" : [
+                                    {
+                                        "class" : "Weapon",
+                                        "args" : {
+                                            "name" : "Machete",
+                                            "type" : "machete",
+                                            "damage" : 20,
+                                            "crit" : 30,
+                                            "max_frames" : 4
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "pos" : [96, 432],
+                        "rot" : "right"
+                    }
+                ],
+                "objects" : [
+                    {
+                        "type" : {
+                            "class" : "Chest",
+                            "args" : {
+                                "items" : [
+                                    {
+                                        "class" : "PlayerWeapon",
+                                        "args" : {
+                                            "name" : "Affetta teste",
+                                            "type" : "axe",
+                                            "damage" : 30,
+                                            "crit" : 60,
+                                            "max_frames" : 4
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "pos" : [80, 432]
+                    }
+                ]
+            }
+        },  
+        {
+            "class" : "Level",
+            "passed" : false,
+            "args" : {
+                "name" : "cave",
+                "music" : "cave",
+                "exit_point" : [256, 40],
+                "start_pos" : [16, 256],
+                "characters" : [
+                    {
+                        "type" : {
+                            "class" : "Enemy",
+                            "args" : {
+                                "name" : "Demone",
+                                "type" : "demon",
+                                "max_hp" : 100,
+                                "max_mana" : 30,
+                                "weakness" : [
+                                    "ghiaccio"
+                                ],
+                                "level" : 3,
+                                "max_frames" : 4,
+                                "weapons" : [
+                                    {
+                                        "class" : "Weapon",
+                                        "args" : {
+                                            "name" : "Machete grande",
+                                            "type" : "machete",
+                                            "damage" : 35,
+                                            "crit" : 5,
+                                            "max_frames" : 4
+                                        }
+                                    },
+                                    {
+                                        "class" : "Spell",
+                                        "args" : {
+                                            "name" : "Sfera di fuoco",
+                                            "type" : "fire",
+                                            "damage" : 35,
+                                            "mana" : 15,
+                                            "effect" : "fuoco"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "type" : {
+                            "class" : "Enemy",
+                            "args" : {
+                                "name" : "Scheletro",
+                                "type" : "skeleton",
+                                "max_hp" : 100,
+                                "max_mana" : 0,
+                                "weakness" : [
+                                    "aria"
+                                ],
+                                "level" : 3,
+                                "max_frames" : 4,
+                                "weapons" : [
+                                    {
+                                        "class" : "Weapon",
+                                        "args" : {
+                                            "name" : "Arco lungo",
+                                            "type" : "bow",
+                                            "damage" : 30,
+                                            "crit" : 1,
+                                            "max_frames" : 5
+                                        }
+                                    },
+                                    {
+                                        "class" : "Weapon",
+                                        "args" : {
+                                            "name" : "Machete",
+                                            "type" : "machete",
+                                            "damage" : 25,
+                                            "crit" : 25,
+                                            "max_frames" : 4
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "pos" : [192, 256],
+                        "rot" : "right"
+                    },
+                    {
+                        "type" : {
+                            "class" : "Enemy",
+                            "args" : {
+                                "name" : "Orco",
+                                "type" : "orc",
+                                "max_hp" : 120,
+                                "max_mana" : 0,
+                                "weakness" : [
+                                    "acqua"
+                                ],
+                                "level" : 3,
+                                "max_frames" : 4,
+                                "weapons" : [
+                                    {
+                                        "class" : "Weapon",
+                                        "args" : {
+                                            "name" : "Spada semplice",
+                                            "type" : "sword",
+                                            "damage" : 30,
+                                            "crit" : 50,
+                                            "max_frames" : 4
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "pos" : [160, 256],
+                        "rot" : "right"
+                    },
+                    {
+                        "type" : {
+                            "class" : "Enemy",
+                            "args" : {
+                                "name" : "Scheletro",
+                                "type" : "skeleton",
+                                "max_hp" : 100,
+                                "max_mana" : 0,
+                                "weakness" : [
+                                    "acqua"
+                                ],
+                                "level" : 3,
+                                "max_frames" : 4,
+                                "weapons" : [
+                                    {
+                                        "class" : "Weapon",
+                                        "args" : {
+                                            "name" : "Arco lungo",
+                                            "type" : "bow",
+                                            "damage" : 30,
+                                            "crit" : 1,
+                                            "max_frames" : 5
+                                        }
+                                    },
+                                    {
+                                        "class" : "Weapon",
+                                        "args" : {
+                                            "name" : "Machete",
+                                            "type" : "machete",
+                                            "damage" : 25,
+                                            "crit" : 25,
+                                            "max_frames" : 4
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "pos" : [320, 256],
+                        "rot" : "left"
+                    },
+                    {
+                        "type" : {
+                            "class" : "Enemy",
+                            "args" : {
+                                "name" : "Orco",
+                                "type" : "orc",
+                                "max_hp" : 120,
+                                "max_mana" : 0,
+                                "weakness" : [
+                                    "acqua"
+                                ],
+                                "level" : 3,
+                                "max_frames" : 4,
+                                "weapons" : [
+                                    {
+                                        "class" : "Weapon",
+                                        "args" : {
+                                            "name" : "Spada semplice",
+                                            "type" : "sword",
+                                            "damage" : 30,
+                                            "crit" : 50,
+                                            "max_frames" : 8
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "pos" : [352, 256],
+                        "rot" : "left"
+                    },
+                    {
+                        "type" : {
+                            "class" : "Enemy",
+                            "args" : {
+                                "name" : "Troll",
+                                "type" : "troll",
+                                "max_hp" : 120,
+                                "max_mana" : 30,
+                                "weakness" : [
+                                    "erba"
+                                ],
+                                "level" : 5,
+                                "max_frames" : 4,
+                                "weapons" : [
+                                    {
+                                        "class" : "Weapon",
+                                        "args" : {
+                                            "name" : "Spadone lungo",
+                                            "type" : "sword",
+                                            "damage" : 35,
+                                            "crit" : 20,
+                                            "max_frames" : 8
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                ],
+                "objects" : [
+                    {
+                        "type" : {
+                            "class" : "Chest",
+                            "args" : {
+                                "items" : [
+                                    {
+                                        "class" : "PlayerSpell",
+                                        "args" : {
+                                            "name" : "Palla di neve",
+                                            "type" : "ice",
+                                            "damage" : 35,
+                                            "mana" : 15,
+                                            "effect" : "ghiaccio"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "pos" : [144, 256]
+                    },
+                    {
+                        "type" : {
+                            "class" : "Chest",
+                            "args" : {
+                                "items" : [
+                                    {
+                                        "class" : "PlayerWeapon",
+                                        "args" : {
+                                            "name" : "Vortice",
+                                            "type" : "air",
+                                            "damage" : 35,
+                                            "mana" : 15,
+                                            "effect" : "aria"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "pos" : [368, 256]
+                    }
+                ]
+            }
+        },
+        {
             "class" : "Level", 
             "passed" : false,
             "args" : {
                 "name" : "maze",
+                "music" : "dungeon",
                 "exit_point" : null,
                 "has_fog" : false,
                 "start_pos" : [256, 480],
@@ -185,6 +605,7 @@
                             "class" : "Chest",
                             "args" : {
                                 "has_collision" : true,
+                                "is_large" : true,
                                 "items" : [
                                     {
                                         "class" : "PlayerSpell",
@@ -200,6 +621,67 @@
                             }
                         },
                         "pos" : [400, 400]
+                    }
+                ]
+            }
+        },
+        {
+            "class" : "Level", 
+            "passed" : false,
+            "args" : {
+                "name" : "boss_fight",
+                "music" : "dungeon",
+                "exit_point" : [457, 240],
+                "start_pos" : [32, 256],
+                "characters" : [
+                    {
+                        "type" : {
+                            "class" : "NPC",
+                            "args" : {
+                                "name" : "Principessa di Pytopia",
+                                "type" : "princess",
+                                "max_frames" : 4,
+                                "dialogue" : "princess"
+                            }
+                        },
+                        "pos" : [416, 240],
+                        "rot" : "left"
+                    }
+                ]
+            }
+        },
+        {
+            "class" : "Level", 
+            "passed" : false,
+            "args" : {
+                "name" : "end",
+                "music" : "forest",
+                "exit_point" : null,
+                "start_pos" : [32, 240],
+                "characters" : [
+                    {
+                        "type" : {
+                            "class" : "NPC",
+                            "args" : {
+                                "name" : "Principessa di Pytopia",
+                                "type" : "princess",
+                                "max_frames" : 4
+                            }
+                        },
+                        "pos" : [240, 256],
+                        "rot" : "right"
+                    },
+                    {
+                        "type" : {
+                            "class" : "NPC",
+                            "args" : {
+                                "name" : "Re di Pytopia",
+                                "type" : "king",
+                                "max_frames" : 4
+                            }
+                        },
+                        "pos" : [272, 256],
+                        "rot" : "left"
                     }
                 ]
             }

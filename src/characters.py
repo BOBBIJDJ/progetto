@@ -14,7 +14,6 @@ class Character:
 		name : str, 
 		type : str,
 		max_frames : int,
-		level : int = 1,
 		frame_mult : int = 4,
 		scale_fact : int | float = 1,
 		has_collision : bool = True,
@@ -23,7 +22,6 @@ class Character:
 	) -> None:
 		self.name = name
 		self.type = type
-		self.level = level
 		self.path = f"{ASSETS_PATH}/sprites/{self.type}"
 		self.scale_fact = (scale_fact*X_RATIO, scale_fact*Y_RATIO)
 		self.max_frames = max_frames
@@ -33,13 +31,9 @@ class Character:
 		self.collision_type = ""
 		self._setSprites()
 		self.rect = self._static_right.get_rect()
-		self.name_text = tbx.Text(
-		    f"{self.name}",
-		    align = "center",
-		)
-		self.level_text = tbx.Text(
-		    f"lv. {self.level}",
-		    align = "center",
+		self._name_box = tbx.TextBox(
+			f"{self.name}",
+			align = "center",
 		)
 		if dialogue is not None:
 			self.has_dialogue = True
@@ -60,7 +54,7 @@ class Character:
 				phrase += word + ' '
 			else:
 				dialogues.append(phrase)
-				phrase = ''
+				phrase = word + ' '
 		if phrase != '':
 			dialogues.append(phrase)
 		self._dialogue = [
@@ -76,8 +70,11 @@ class Character:
 		) -> None:
 		if pos[1] >= 256: 
 			dialogue_pos = (256, 128)
+			text_pos = (256, 32)
 		else:
 			dialogue_pos = (256, 384)
+			text_pos = (256, 288)
+		self._name_box.show(screen, text_pos)
 		if self.page < self._max_page:
 			self._dialogue[self.page].show(screen, dialogue_pos)
 		else:
@@ -86,13 +83,13 @@ class Character:
 
 	def _setSprites(self) -> None:
 		self._static_right = pygame.image.load(
-			f"{self.path}/static/static_r.png"
+			f"{self.path}/static/static_right.png"
 		)
 		self._static_right = pygame.transform.scale_by(
 			self._static_right, self.scale_fact
 		)
 		self._static_left = pygame.image.load(
-			f"{self.path}/static/static_l.png"
+			f"{self.path}/static/static_left.png"
 		)
 		self._static_left = pygame.transform.scale_by(
 			self._static_left, self.scale_fact
@@ -154,9 +151,15 @@ class NPC(Character):
 		type : str, 
 		max_frames : int,
 		frame_mult : int = 4,
+		scale_fact : int | float = 1,
+		has_collision : bool = True,
+		dialogue : str | None = None,
 	) -> None:
-		Character.__init__(self, name, type, max_frames, frame_mult)
-		self.collision_type = "nobattle"
+		is_hostile = False
+		Character.__init__(
+			self, name, type, max_frames, frame_mult,
+			scale_fact, has_collision, is_hostile, dialogue	
+		)
 
 	# def giveItem(self, player, item):
 	# 	player.items.append()
@@ -172,6 +175,7 @@ class Enemy(Character):
 		max_frames : int,
 		frame_mult : int = 4,
 		scale_fact : int | float = 1,
+		sight_size : tuple[int, int] | None = None,
 		has_collision : bool = True,
 		is_hostile : bool = True,
 		dialogue : str | None = None, 
@@ -180,13 +184,15 @@ class Enemy(Character):
 		weakness : list[str] = [],
 	) -> None:
 		Character.__init__(
-			self, name, type, max_frames, level, frame_mult, 
+			self, name, type, max_frames, frame_mult, 
 			scale_fact, has_collision, is_hostile, dialogue
 		)
+		if sight_size is not None:
+			self.rect.inflate_ip(sight_size[0]*X_RATIO, sight_size[1]*Y_RATIO)
+		self.level = level
 		self.max_hp = self.hp = max_hp
 		self.max_mana = self.mana = max_mana
 		self.weakness = weakness
-		self.collision_type = "battle"
 		self.weapons : list[wp.Weapon] = [
 			wp.CLASSES[weapon["class"]](**weapon["args"]) for weapon in weapons
 		]
@@ -194,6 +200,14 @@ class Enemy(Character):
 			wp.CLASSES[spell["class"]](**spell["args"]) for spell in spells
 		]
 		self.is_dead = False
+		self.name_text = tbx.Text(
+			f"{self.name}",
+			align = "center",
+		)
+		self.level_text = tbx.Text(
+		    f"lv. {self.level}",
+		    align = "center",
+		)
 		# self.setAttackAnimations()
 
 	def getDamage(
@@ -226,6 +240,8 @@ class Subplayer(Character):
 		max_mana : int,
 		weakness : list[str],
 		max_frames : int,
+		hp_mult : int | float = 1,
+		mana_mult : int | float = 1,
 		level : int = 1,
 		frame_mult : int = 4,
 		scale_fact : int | float = 1,
@@ -234,10 +250,13 @@ class Subplayer(Character):
 		weapons : list = [],
 		spells : list = [],
 	) -> None:
-		Character.__init__(self, name, type, max_frames, level, frame_mult, scale_fact, has_collision, is_hostile)
+		Character.__init__(self, name, type, max_frames, frame_mult, scale_fact, has_collision, is_hostile)
+		self.level = level
 		self.max_hp = max_hp
 		self.max_mana = max_mana
 		self.weakness = weakness
+		self.hp_mult = hp_mult
+		self.mana_mult = mana_mult
 		self.weapons = [
 			wp.CLASSES[weapon["class"]](**weapon["args"]) for weapon in weapons
 		]
@@ -249,4 +268,5 @@ CLASSES = {
 	"Character" : Character,
 	"Subplayer" : Subplayer,
 	"Enemy" : Enemy,
+	"NPC" : NPC,
 }

@@ -27,6 +27,13 @@ MESSAGES = {
     "nemic_super" : "Hai subito un colpo superefficace",
 }
 
+pygame.mixer.init()
+SFX = {
+    "attack" : pygame.mixer.Sound(f"{ASSETS_PATH}/SFX/attack.ogg"),
+    "chest" : pygame.mixer.Sound(f"{ASSETS_PATH}/SFX/chest.ogg"),
+    "start" : pygame.mixer.Sound(f"{ASSETS_PATH}/SFX/start.ogg"),
+}
+
 class PrimitiveLevel:
     '''
     ## Una classe per rappresentare i livelli del gioco.
@@ -44,6 +51,7 @@ class PrimitiveLevel:
         self,
         name : str,
         start_pos : tuple[int, int], 
+        music : str | None = None,
         scale_fact : int | float = 1,
         characters : list = [],
         objects : list = [],
@@ -97,6 +105,10 @@ class PrimitiveLevel:
         self._characters_ref = characters 
         self._objects_ref = objects
         self.passed = False
+        if music is not None:
+            self._music_path = f"{ASSETS_PATH}/music/{music}.ogg"
+        else:
+            self._music_path = None
         self._setBoundMask()
 
     def _getCharacters(self) -> None:
@@ -157,6 +169,7 @@ class PrimitiveLevel:
             (self._player_start_pos[0]*self._scale_fact[0], 
              self._player_start_pos[1]*self._scale_fact[1]),
         )
+        player.regenerate()
         for character in self._characters:
             character["type"].setPos(
                 screen, 
@@ -206,27 +219,37 @@ class PrimitiveLevel:
                 elif event.key == pygame.K_RETURN:
                     self._next_page = not self._next_page
 
+    def _playMusic(self) -> None:
+        if self._music_path is not None:
+            pygame.mixer.music.load(self._music_path)
+            pygame.mixer.music.play(loops=-1, fade_ms=2000)
+
 class Level(PrimitiveLevel):
     def __init__(
         self,
         name : str,
         exit_point : tuple[int, int],
         start_pos : tuple[int, int],
+        music : str | None = None,
         has_fog : bool = False,
         scale_fact : int | float = 1,
         characters : list = [],
         objects : list = [],
     ) -> None:
         PrimitiveLevel.__init__(
-            self, name, start_pos, scale_fact, characters, objects
+            self, name, start_pos, music, scale_fact, characters, objects
         )
-        self._battle_bg = pygame.image.load(f"{ASSETS_PATH}/battle/bg.png")
+        self._battle_bg = pygame.image.load(f"{self._path}/battle.png")
         self._battle_bg = pygame.transform.scale_by(self._battle_bg, self._scale_fact)
         self._battle_bg_rect = self._bg_rect
         self._hp_bar = pygame.image.load(f"{ASSETS_PATH}/hp/hp.png")
         self._hp_bar = pygame.transform.scale_by(self._hp_bar, self._scale_fact)
         self._has_fog = has_fog
-        self._exit_point = exit_point
+        self._exit_point = ( 
+            (exit_point[0]*X_RATIO, 
+             exit_point[1]*Y_RATIO) 
+            if exit_point is not None else None                    
+        )
         if self._has_fog:
             self._setFog()
 
@@ -234,10 +257,8 @@ class Level(PrimitiveLevel):
         self,
         player : pl.Player,
     ) -> bool:
-        if self._exit_point is None:
-            return False
-        
-        if player.rect.collidepoint(self._exit_point):
+        if ((self._exit_point is not None)
+            and player.rect.collidepoint(self._exit_point)):
             return True
         else:
             return False
@@ -326,6 +347,9 @@ class Level(PrimitiveLevel):
         enemy : ch.Enemy,
     ) -> tuple[wp.Weapon, int, bool]:
         best_damage = 0
+        player_is_weak = False
+        level_factor = 1 + (0.25 * ((enemy.level - player.level) // 5))
+        level_factor = max(0.25, min(2, level_factor))
         for weapon in enemy.weapons:
             if weapon.damage >= player.hp:
                 best_attack = weapon
@@ -333,7 +357,7 @@ class Level(PrimitiveLevel):
             potential_damage = (
                 weapon.damage 
                 * (1 + (weapon.crit /100)) 
-                * (enemy.level / player.level)
+                * level_factor
             )
             if potential_damage > best_damage:
                 best_attack = weapon
@@ -341,37 +365,35 @@ class Level(PrimitiveLevel):
 
         for spell in enemy.spells:
             if enemy.mana >= spell.mana:
+                is_weak = spell.effect in player.weakness
                 spell_damage = (
                     spell.damage
-                    * (2 if spell.effect in player.weakness else 1)
-                    * (enemy.level / player.level)
+                    * (1.5 if is_weak else 1)
+                    * level_factor
                 )
-                if spell_damage >= player.hp:
+                if (spell_damage >= player.hp
+                    or ((spell.type == "cure")
+                        and enemy.hp <= (enemy.max_hp * 0.2))):
                     best_attack = spell
-                    break
-                if ((spell.type == "cure")
-                    and enemy.hp <= (enemy.max_hp * 0.2)):
-                    best_attack = spell
+                    player_is_weak = is_weak
                     break
                 if spell_damage > best_damage:
                     best_attack = spell
                     best_damage = spell_damage
-
-        if (isinstance(best_attack, wp.Spell)
-            and best_attack.effect in player.weakness):
-            player_is_weak = True
-        else:
-            player_is_weak = False
+                    player_is_weak = is_weak
         
         if best_attack.type == "cure":
-            enemy.cure()
-            damage = 0
+                enemy.cure()
+                damage = 0
         else:
             damage = round(
                 best_attack.attack()
-                * (enemy.level / player.level)
-                * (2 if player_is_weak else 1)
+                * level_factor
+                * (1.5 if player_is_weak else 1)
             )
+
+        if isinstance(best_attack, wp.Spell):
+            enemy.mana -= best_attack.mana
             
         return (best_attack, damage, player_is_weak)
 
@@ -433,7 +455,8 @@ class Level(PrimitiveLevel):
             self._blitSection(screen, player, mouse_pos, mouse_buttons[0])
 
             # ottenere l'attacco del giocatore
-            if ((not player_attacking) 
+            if ((not player_attacking)
+                and (not enemy_attacking) 
                 and (not player.is_dead) 
                 and (not enemy.is_dead)):
                 for attack in self._current_section["attacks"]:
@@ -462,6 +485,7 @@ class Level(PrimitiveLevel):
                 player_attacking = player_attack.attackAnim(screen, "right")
                 if not enemy_inflicted:
                     enemy.getDamage(player_damage)
+                    SFX["attack"].play()
                     enemy_inflicted = True
                 message = (
                     MESSAGES["vittoria"] if enemy.is_dead else (
@@ -474,10 +498,13 @@ class Level(PrimitiveLevel):
                 )    
                 enemy_attacking = not player_attacking
 
-            if (not enemy.is_dead) and enemy_attacking:
+            if ((not enemy.is_dead) 
+                and enemy_attacking 
+                and (not pygame.mixer.get_busy())):
                 enemy_attacking = enemy_attack.attackAnim(screen, "left")
                 if not player_inflicted:
                     player.getDamage(enemy_damage)
+                    SFX["attack"].play()
                     player_inflicted = True
                 message = (
                     MESSAGES["morto"] if player.is_dead else (
@@ -579,6 +606,8 @@ class Level(PrimitiveLevel):
         self._next_page = False
         last_page = False
         
+        self._playMusic()
+
         player.saveState()
 
         while ((not self.quit) 
@@ -628,6 +657,7 @@ class Level(PrimitiveLevel):
                 ):
                     player.addItems(object["type"].items)
                     object["type"].collision()
+                    SFX["chest"].play()
             
             if self._has_fog:
                 self._setFogPos(screen, player.rect.center)
@@ -647,10 +677,13 @@ class ClassSelection(PrimitiveLevel):
         self,
         name : str,
         start_pos : tuple[int, int],
+        music : str | None = None,
         scale_fact : int | float = 1,
         characters : list = [],
     ) -> None:
-        PrimitiveLevel.__init__(self, name, start_pos, scale_fact, characters)
+        PrimitiveLevel.__init__(
+            self, name, start_pos, music, scale_fact, characters
+        )
 
     def playLevel(
         self, 
@@ -666,15 +699,14 @@ class ClassSelection(PrimitiveLevel):
         frame = 0
         self.quit = False
         self._in_inventory = False
+
+        self._playMusic()
         
         player.saveState()
 
         while ((not self.quit) 
                and (not self.passed) 
         ):
-            if player.is_dead:
-                self._setLevel(screen, player)
-                player.reset()
             
             keys = pygame.key.get_pressed()
         
@@ -728,13 +760,14 @@ class StartMenu:
         self._bg_rect = self._bg.get_rect()
         self._options = [
             {
-                "text" : tbx.Text("Nuovo gioco"),
+                "text" : tbx.Text("Nuovo gioco", font_size=14),
                 "levels" : default_levels_data,
                 "has_collision" : True,
             },
             {
                 "text" : tbx.Text(
                     "Carica Salvataggio", 
+                    font_size=14,
                     font_color=("grey" if not LOADED else "white")
                 ),
                 "levels" : loaded_levels_data,
@@ -761,12 +794,13 @@ class StartMenu:
             screen.blit(self._bg, self._bg_rect)
 
             for i, option in enumerate(self._options):
-                option["text"].show(screen, (256, 229+(i*56)))
+                option["text"].show(screen, (256, 355+(i*54)))
                 if option["has_collision"]:
                     if option["text"].rect.collidepoint(mouse_pos):
                         option["text"].changeColor("blue")
                         if mouse_buttons[0]:
                             self._levels = option["levels"]
+                            SFX["start"].play()
                             running = False
                             break
                     else:

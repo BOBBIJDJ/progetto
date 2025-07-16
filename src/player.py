@@ -15,34 +15,45 @@ class Player:
 	def __init__(
 		self, 
 		max_frames : int,
+		name : str = "???",
 		type : str = "default",
 		level : int = 0,
 		frame_mult : int = 4,
 		walk_speed : int | float = 2,
 		max_hp : int = 10,
+		hp_mult : int | float = 1,
 		max_mana : int = 0,
+		mana_mult : int | float = 1,
 		scale_fact : int | float = 1,
 		weakness : list = [],
 		weapons : list = [],
 		spells : list = [],
 	) -> None:
-		self.name = "???"
+		self.name = name
 		self.level = level
 		self._path = f"{ASSETS_PATH}/sprites/{type}"
 		self._scale_fact = (scale_fact*X_RATIO, scale_fact*Y_RATIO)
 		self._walk_speed = walk_speed*MAX_RATIO
 		self._max_frames = max_frames
 		self.weakness = weakness
-		self.weapons = list()
-		self.spells = list()
+		self.weapons = [
+			wp.CLASSES[weapon["class"]](**weapon["args"]) for weapon in weapons
+		]
+		self.spells = [
+			wp.CLASSES[spell["class"]](**spell["args"]) for spell in spells
+		]
 		self._frame_mult = frame_mult
 		self._setSprites()
 		self.rect = self._static["last"].get_rect()
 		self.is_dead = False
 		self.max_hp = self.hp = max_hp
 		self.max_mana = self.mana = max_mana
-		self.weapons = weapons
-		self.spells = spells
+		self._hp_mult = hp_mult
+		self._mana_mult = mana_mult
+		self.name_text = tbx.Text(
+			    f"{self.name}",
+		    align = "center"
+		)
 		self.inventory = Inventory(self)
 		
 	def showStatic(
@@ -61,13 +72,13 @@ class Player:
 
 	def _setSprites(self) -> None:
 		self._static_right = pygame.image.load(
-			f"{self._path}/static/static_r.png"
+			f"{self._path}/static/static_right.png"
 		)
 		self._static_right = pygame.transform.scale_by(
 			self._static_right, self._scale_fact
 		)
 		self._static_left = pygame.image.load(
-			f"{self._path}/static/static_l.png"
+			f"{self._path}/static/static_left.png"
 		)
 		self._static_left = pygame.transform.scale_by(
 			self._static_left, self._scale_fact
@@ -153,16 +164,14 @@ class Player:
 		self.weakness = player_class.weakness
 		self.hp = self.max_hp = player_class.max_hp
 		self.mana = self.max_mana = player_class.max_mana
+		self._hp_mult = player_class.hp_mult
+		self._mana_mult = player_class.mana_mult
 		self._setSprites()
 		tmp_rect_pos = self.rect.center
 		self.rect = player_class.rect
 		self.rect.center = tmp_rect_pos
 		self.name_text = tbx.Text(
 			    f"{self.name}",
-		    align = "center"
-		)
-		self.level_text = tbx.Text(
-			    f"lv. {self.level}",
 		    align = "center"
 		)
 
@@ -248,10 +257,17 @@ class Player:
 		attack : wp.Weapon,
 		enemy : ch.Enemy,
 	) -> tuple[int, bool]:
+		if ((isinstance(attack, wp.Spell) and self.type == "mage") 
+	  		or (attack.type == "bow" and self.type == "archer") 
+			or (attack.type != "bow" and self.type == "knight")):
+			weaponbuff = True
+		else:
+			weaponbuff = False
 		enemy_is_weak = False
+		level_factor = 1 + (0.25 * ((self.level - enemy.level) // 5))
+		level_factor = max(0.25, min(2, level_factor))
 		if isinstance(attack, wp.Spell):
-			if (attack.effect in enemy.weakness):
-				enemy_is_weak = True
+			enemy_is_weak = attack.effect in enemy.weakness
 			self.mana -= attack.mana
 		if attack.type == "cure":
 			self._cure()
@@ -259,8 +275,9 @@ class Player:
 		else:
 			damage = round(
 			    attack.attack() 
-			    * (self.level / enemy.level)
-			    * (2 if enemy_is_weak else 1)
+			    * level_factor
+			    * (1.5 if enemy_is_weak else 1)
+				* (1.5 if weaponbuff else 1)
 			)
 		return (damage, enemy_is_weak)
 	
@@ -279,20 +296,28 @@ class Player:
 		self.hp = min(new_hp, self.max_hp)
 
 	def levelUp(self) -> None:
-		self.hp = self.max_hp = self.max_hp + 15
-		self.mana = self.max_mana = self.max_mana + 1
+		self.max_hp = max(7, round(self.max_hp + (15 * self._hp_mult)))
+		self.max_mana = max(1, round(self.max_mana + (2 * self._mana_mult)))
 		self.level += 1
 
 	def saveState(self) -> None:
 		self._last_hp = self.max_hp
 		self._last_mana = self.max_mana
 		self._last_level = self.level
+		self._last_weapons = self.weapons
+		self._last_spells = self.spells
 
 	def reset(self) -> None:
 		self.is_dead = False
 		self.hp = self.max_hp = self._last_hp
 		self.mana = self.max_mana = self._last_mana
 		self.level = self._last_level
+		self.weapons = self._last_weapons
+		self.spells = self._last_spells
+
+	def regenerate(self) -> None:
+		self.hp = self.max_hp
+		self.mana = self.max_mana
 
 	def getData(self) -> dict:
 		weapons = [
@@ -308,11 +333,14 @@ class Player:
 			} for spell in self.spells
 		]
 		data = {
+			"name" : self.name,
 			"type" : self.type,
 			"level" : self.level,
 			"max_frames" : self._max_frames,
 			"max_hp" : self.max_hp,
+			"hp_mult" : self._hp_mult,
 			"max_mana" : self.max_mana,
+			"mana_mult" : self._mana_mult,
 			"weakness" : self.weakness,
 			"weapons" : weapons,
 			"spells" : spells,
@@ -360,9 +388,9 @@ class Inventory:
 			text.show(screen, (74, 224+(i*55)))
 		self._weapons_text.show(screen, (218, 113))
 		self._spells_text.show(screen, (400, 113))
-		if self._player.weapons:
+		if self._player.weapons is not None:
 			for i, weapon in enumerate(self._player.weapons):
 				weapon.showBox(screen, (218, 180+(69*i)))
-		if self._player.spells:
+		if self._player.spells is not None:
 			for j, spell in enumerate(self._player.spells):
 				spell.showBox(screen, (400, 180+(69*j)))

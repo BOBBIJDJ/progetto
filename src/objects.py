@@ -7,11 +7,12 @@ import weapons as wp
 class Chest:
     def __init__(
         self, 
-        has_collision : bool,
+        items : list,
+        has_collision : bool = True,
+        is_large : bool = False,
         scale_fact : int | float = 1,
-        items : list = [],
     ) -> None:
-        self._path = f"{ASSETS_PATH}/objects/chest"
+        self._path = f"{ASSETS_PATH}/objects/{"large_chest" if is_large else "chest"}"
         self.has_collision = has_collision
         self._scale_fact = (scale_fact*X_RATIO, scale_fact*Y_RATIO)
         self._static = pygame.image.load(f"{self._path}/static.png")
