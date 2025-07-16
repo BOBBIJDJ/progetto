@@ -1,8 +1,3 @@
-'''
-## Gestisce la classe Level per la rappresentazione e la riproduzione 
-## dei livelli del gioco
-'''
-
 import pygame
 
 import player as pl
@@ -35,18 +30,6 @@ SFX = {
 }
 
 class PrimitiveLevel:
-    '''
-    ## Una classe per rappresentare i livelli del gioco.
-
-    ### Attributi
-    passed -> bool:
-        stato di superamento del livello
-    
-    ### Metodi
-    playLevel(screen, player, clock, max_fps) -> None:
-        imposta il livello e lo riproduce con un sub-gameloop
-
-    '''
     def __init__(
         self,
         name : str,
@@ -56,45 +39,6 @@ class PrimitiveLevel:
         characters : list = [],
         objects : list = [],
     ) -> None:
-        '''
-        ## Inizializza un oggetto Livello -> None
-
-        ### Parametri:
-            name = nome del livello (e della cartella corrispondente) 
-                -> str
-            start_pos = posizione iniziale del giocatore
-                -> tuple[int, int] 
-            characters_ref = lista delle entità presenti nel livello
-                -> [
-                    {
-                        "type" : tipo di entità (es. ch.Subplayer(...)),
-                        "pos" : tuple[int, int] (es. (x, y)),
-                        "rot" : Rotation ("left" o "right"),
-                    },
-                    ...
-                ]
-            objects_ref = lista di oggetti presenti nel livello
-                -> [
-                    {
-                        "type" : tipo di oggetto (es. obj.Chest()),
-                        "pos" : tuple[int, int] ( es. (x, y)),
-                    },
-                    ...
-                ]
-            dialogue_box_ref = lista di finestra di dialogo presenti
-                -> [
-                    {
-                        "type" : tipo di finestra (es. tbx.TextBox(...)),
-                        "pos" : tuple[int, int] (es (x, y))
-                    },
-                    ...
-                ]
-            has_fog = attiva o disattiva l'effetto visuale oscurata 
-                -> bool
-            is_menu = attiva o disattiva la scelta della classe 
-                -> bool
-            scale_fact = fattore di ingrandimento -> int o float
-        '''
         self._name = name
         self._path = f"{ASSETS_PATH}/levels/{self._name}"
         self._scale_fact = (scale_fact*X_RATIO, scale_fact*Y_RATIO)
@@ -132,9 +76,6 @@ class PrimitiveLevel:
             })
 
     def _setBoundMask(self) -> None:
-        '''
-        ## Imposta la maschera per le collisioni con il livello -> None
-        '''
         mask_surface = pygame.image.load(f"{self._path}/mask.png")
         mask_surface = pygame.transform.scale_by(mask_surface, self._scale_fact)
         self._mask = pygame.mask.from_surface(mask_surface)
@@ -143,10 +84,6 @@ class PrimitiveLevel:
         self, 
         player : pl.Player, 
     ) -> bool:
-        '''
-        ## Verifica la collisione tra la maschera del giocatore e quella
-        del livello -> bool
-        '''
         overlap = self._mask.overlap(player.mask["last"], player.next_pos)
         if overlap is None:
             return False
@@ -158,9 +95,6 @@ class PrimitiveLevel:
         screen : pygame.Surface, 
         player : pl.Player,
     ) -> None:
-        '''
-        ## Inizializza gli elementi del livello -> None
-        '''
         self._getCharacters()
         self._getObjects()
         screen.blit(self._bg, self._bg_rect)
@@ -189,9 +123,6 @@ class PrimitiveLevel:
         screen : pygame.Surface, 
         frame : int,
     ) -> None:
-        '''
-        ## Rappresenta gli elementi del livello sul frame attuale -> None
-        '''
         screen.blit(self._bg, self._bg_rect)
 
         for character in self._characters:
@@ -200,9 +131,6 @@ class PrimitiveLevel:
             object["type"].show(screen)
 
     def _canMove(self, player : pl.Player) -> bool:
-        '''
-        ## Verifica la possibilità del giocatore di muoversi -> bool
-        '''
         if (not self._in_inventory) and (not self._doesBoundMaskOverlap(player)):
             return True
         else:
@@ -264,9 +192,6 @@ class Level(PrimitiveLevel):
             return False
 
     def _setFog(self) -> None:
-        '''
-        ## Imposta la maschera per la visuale oscurata -> None
-        '''
         self._fog_bg = pygame.image.load(f"{ASSETS_PATH}/fog/fog.png")
         self._fog_bg = pygame.transform.scale_by(self._fog_bg, self._scale_fact)
         fog_circle = pygame.image.load(f"{ASSETS_PATH}/fog/circle.png")
@@ -278,9 +203,6 @@ class Level(PrimitiveLevel):
         screen : pygame.Surface, 
         pos : tuple[int, int],
     ) -> None:
-        '''
-        ## Sposta la maschera per la visuale oscurata -> None
-        '''
         self._fog_mask = pygame.mask.from_surface(self._fog_bg)
         self._fog_mask.erase(self.fog_circle_mask, (pos[0] - 64, pos[1] - 64))
         self._fog_mask.invert()
@@ -424,9 +346,6 @@ class Level(PrimitiveLevel):
         clock : pygame.Clock, 
         max_fps : int,
     ) -> None:
-        '''
-        ## Riproduce il sub-gameloop relativo alla lotta -> None
-        '''
         self._setBattle(screen, player, enemy)
 
         frame = 0
@@ -596,9 +515,6 @@ class Level(PrimitiveLevel):
         clock : pygame.Clock, 
         max_fps : int,
     ) -> None:
-        '''
-        ## Riproduce il sub-gameloop relativo al livello -> None
-        '''
         self._setLevel(screen, player)
         frame = 0
         self.quit = False
@@ -692,9 +608,6 @@ class ClassSelection(PrimitiveLevel):
         clock : pygame.Clock, 
         max_fps : int,
     ) -> None:
-        '''
-        ## Riproduce il sub-gameloop relativo al livello di scelta delle classi -> None
-        '''
         self._setLevel(screen, player)
         frame = 0
         self.quit = False
@@ -737,9 +650,6 @@ class ClassSelection(PrimitiveLevel):
         player : pl.Player, 
         keys : list[int],
     ) -> bool:
-        '''
-        ## Verifica la scelta della classe del giocatore -> bool
-        '''
         for character in self._characters:
             if (player.rect.colliderect(character["type"].rect)  
                 and keys[pygame.K_e]

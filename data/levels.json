@@ -342,7 +342,9 @@
                                     }
                                 ]
                             }
-                        }
+                        },
+                        "pos" : [256, 368],
+                        "rot" : "left"
                     },
                     {
                         "type" : {
@@ -507,10 +509,22 @@
                                             "crit" : 20,
                                             "max_frames" : 8
                                         }
+                                    },
+                                    {
+                                        "class" : "Spell",
+                                        "args" : {
+                                            "name" : "Saetta",
+                                            "type" : "lightning",
+                                            "damage" : 40,
+                                            "mana" : 30,
+                                            "effect" : "fulmine"
+                                        }
                                     }
                                 ]
                             }
-                        }
+                        },
+                        "pos" : [256, 80],
+                        "rot" : "left"
                     }
                 ],
                 "objects" : [
@@ -542,11 +556,11 @@
                                     {
                                         "class" : "PlayerWeapon",
                                         "args" : {
-                                            "name" : "Vortice",
-                                            "type" : "air",
-                                            "damage" : 35,
-                                            "mana" : 15,
-                                            "effect" : "aria"
+                                            "name" : "Spadone lungo",
+                                            "type" : "sword",
+                                            "damage" : 40,
+                                            "crit" : 15,
+                                            "max_frames" : 8
                                         }
                                     }
                                 ]
@@ -580,7 +594,6 @@
                                 ],
                                 "level" : 1,
                                 "max_frames" : 4,
-                                "dialogue" : "testo0",
                                 "weapons" : [
                                     {
                                         "class" : "Weapon",
