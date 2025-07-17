@@ -31,6 +31,7 @@ class Player:
 	) -> None:
 		self.name = name
 		self.level = level
+		self.type = type
 		self._path = f"{ASSETS_PATH}/sprites/{type}"
 		self._scale_fact = (scale_fact*X_RATIO, scale_fact*Y_RATIO)
 		self._walk_speed = walk_speed*MAX_RATIO
@@ -175,15 +176,14 @@ class Player:
 		    align = "center"
 		)
 
-	def addItems(
+	def addItem(
 		self,
-		items : list[wp.Weapon],
+		item : wp.Weapon,
 	) -> None:
-		for item in items:
-			if isinstance(item, wp.Spell):
-				self.spells.append(item)
-			else:
-				self.weapons.append(item)
+		if isinstance(item, wp.Spell):
+			self.spells.append(item)
+		else:
+			self.weapons.append(item)
 
 	def setPos(
 		self, 

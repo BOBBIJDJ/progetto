@@ -48,8 +48,8 @@
                             "args" : {
                                 "name" : "Mago",
                                 "type" : "mage",
-                                "max_hp" : 80,
-                                "max_mana" : 50,
+                                "max_hp" : 100,
+                                "max_mana" : 60,
                                 "hp_mult" : 1,
                                 "mana_mult" : 3,
                                 "max_frames" : 4,
@@ -76,7 +76,7 @@
                                             "type" : "fire",
                                             "damage" : 35,
                                             "effect" : "fuoco",
-                                            "mana" : 25
+                                            "mana" : 20
                                         } 
                                     }
                                 ]
@@ -133,7 +133,7 @@
                         "type" : {
                             "class" : "NPC",
                             "args" : {
-                                "name" : "Re di Pytopia",
+                                "name" : "Re della pyTerra",
                                 "type" : "king",
                                 "max_frames" : 4,
                                 "dialogue" : "king"
@@ -193,7 +193,7 @@
                                             "type" : "bow",
                                             "damage" : 15,
                                             "crit" : 50,
-                                            "max_frames" : 4
+                                            "max_frames" : 5
                                         }
                                     },
                                     {
@@ -278,18 +278,16 @@
                         "type" : {
                             "class" : "Chest",
                             "args" : {
-                                "items" : [
-                                    {
-                                        "class" : "PlayerWeapon",
-                                        "args" : {
-                                            "name" : "Affetta teste",
-                                            "type" : "axe",
-                                            "damage" : 30,
-                                            "crit" : 60,
-                                            "max_frames" : 4
-                                        }
+                                "item" : {
+                                    "class" : "PlayerWeapon",
+                                    "args" : {
+                                        "name" : "Affetta teste",
+                                        "type" : "axe",
+                                        "damage" : 30,
+                                        "crit" : 60,
+                                        "max_frames" : 4
                                     }
-                                ]
+                                }
                             }
                         },
                         "pos" : [80, 432]
@@ -407,7 +405,7 @@
                                             "type" : "sword",
                                             "damage" : 30,
                                             "crit" : 50,
-                                            "max_frames" : 4
+                                            "max_frames" : 8
                                         }
                                     }
                                 ]
@@ -532,18 +530,16 @@
                         "type" : {
                             "class" : "Chest",
                             "args" : {
-                                "items" : [
-                                    {
-                                        "class" : "PlayerSpell",
-                                        "args" : {
-                                            "name" : "Palla di neve",
-                                            "type" : "ice",
-                                            "damage" : 35,
-                                            "mana" : 15,
-                                            "effect" : "ghiaccio"
-                                        }
+                                "item" : {
+                                    "class" : "PlayerSpell",
+                                    "args" : {
+                                        "name" : "Palla di neve",
+                                        "type" : "ice",
+                                        "damage" : 35,
+                                        "mana" : 15,
+                                        "effect" : "ghiaccio"
                                     }
-                                ]
+                                }
                             }
                         },
                         "pos" : [144, 256]
@@ -552,18 +548,16 @@
                         "type" : {
                             "class" : "Chest",
                             "args" : {
-                                "items" : [
-                                    {
-                                        "class" : "PlayerWeapon",
-                                        "args" : {
-                                            "name" : "Spadone lungo",
-                                            "type" : "sword",
-                                            "damage" : 40,
-                                            "crit" : 15,
-                                            "max_frames" : 8
-                                        }
+                                "item" : {
+                                    "class" : "PlayerWeapon",
+                                    "args" : {
+                                        "name" : "Spadone lungo",
+                                        "type" : "sword",
+                                        "damage" : 40,
+                                        "crit" : 15,
+                                        "max_frames" : 8
                                     }
-                                ]
+                                }
                             }
                         },
                         "pos" : [368, 256]
@@ -577,38 +571,318 @@
             "args" : {
                 "name" : "maze",
                 "music" : "dungeon",
-                "exit_point" : null,
-                "has_fog" : false,
+                "exit_point" : [256, 32],
+                "has_fog" : true,
                 "start_pos" : [256, 480],
                 "characters" : [
                     {
                         "type" : {
                             "class" : "Enemy",
                             "args" : {
-                                "name" : "Nemico",
-                                "type" : "dragon",
-                                "max_hp" : 200,
+                                "name" : "Goblin",
+                                "type" : "goblin",
+                                "max_hp" : 80,
                                 "max_mana" : 30,
                                 "weakness" : [
                                     "fuoco"
                                 ],
-                                "level" : 1,
+                                "level" : 5,
                                 "max_frames" : 4,
                                 "weapons" : [
                                     {
                                         "class" : "Weapon",
                                         "args" : {
-                                            "name" : "Ascia vichinga",
-                                            "type" : "axe",
+                                            "name" : "Arco lungo",
+                                            "type" : "bow",
+                                            "damage" : 30,
+                                            "crit" : 30,
+                                            "max_frames" : 5
+                                        }
+                                    },
+                                    {
+                                        "class" : "Spell",
+                                        "args" : {
+                                            "name" : "Frana",
+                                            "type" : "dirt",
                                             "damage" : 20,
-                                            "crit" : 5,
-                                            "max_frames" : 4
-                                        } 
+                                            "mana" : 15,
+                                            "effect" : "terra"
+                                        }
                                     }
                                 ]
                             }
                         },
-                        "pos" : [256, 256],
+                        "pos" : [472, 168],
+                        "rot" : "right"
+                    },
+                    {
+                        "type" : {
+                            "class" : "Enemy",
+                            "args" : {
+                                "name" : "Necromante",
+                                "type" : "necromancer",
+                                "max_hp" : 100,
+                                "max_mana" : 80,
+                                "weakness" : [
+                                    "aria"
+                                ],
+                                "level" : 6,
+                                "max_frames" : 4,
+                                "weapons" : [
+                                    {
+                                        "class" : "Spell",
+                                        "args" : {
+                                            "name" : "Magma infernale",
+                                            "type" : "fire",
+                                            "damage" : 25,
+                                            "mana" : 20,
+                                            "effect" : "fuoco"
+                                        }
+                                    },
+                                    {
+                                        "class" : "Spell",
+                                        "args" : {
+                                            "name" : "Tsunami",
+                                            "type" : "water",
+                                            "damage" : 25,
+                                            "mana" : 20,
+                                            "effect" : "acqua"
+                                        }
+                                    },
+                                    {
+                                        "class" : "Spell",
+                                        "args" : {
+                                            "name" : "Tornado",
+                                            "type" : "air",
+                                            "damage" : 25,
+                                            "mana" : 20,
+                                            "effect" : "aria"
+                                        }
+                                    },
+                                    {
+                                        "class" : "Spell",
+                                        "args" : {
+                                            "name" : "Cura",
+                                            "type" : "cure",
+                                            "damage" : 0,
+                                            "mana" : 40,
+                                            "effect" : "cura"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "pos" : [432, 32],
+                        "rot" : "left"
+                    },
+                    {
+                        "type" : {
+                            "class" : "Enemy",
+                            "args" : {
+                                "name" : "Troll",
+                                "type" : "troll",
+                                "max_hp" : 100,
+                                "max_mana" : 0,
+                                "weakness" : [
+                                    "fuoco"
+                                ],
+                                "level" : 7,
+                                "max_frames" : 4,
+                                "weapons" : [
+                                    {
+                                        "class" : "Weapon",
+                                        "args" : {
+                                            "name" : "Machete",
+                                            "type" : "machete",
+                                            "damage" : 25,
+                                            "crit" : 20,
+                                            "max_frames" : 4
+                                        }
+                                    },
+                                    {
+                                        "class" : "Weapon",
+                                        "args" : {
+                                            "name" : "Spada leggera",
+                                            "type" : "sword",
+                                            "damage" : 30,
+                                            "crit" : 0,
+                                            "max_frames" : 8
+                                        }
+                                    },
+                                    {
+                                        "class" : "Weapon",
+                                        "args" : {
+                                            "name" : "Ascia pesante",
+                                            "type" : "axe",
+                                            "damage" : 20,
+                                            "crit" : 50,
+                                            "max_frames" : 4
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "pos" : [256, 208],
+                        "rot" : "right"
+                    },
+                    {
+                        "type" : {
+                            "class" : "Enemy",
+                            "args" : {
+                                "name" : "Orco",
+                                "type" : "orc",
+                                "max_hp" : 120,
+                                "max_mana" : 30,
+                                "weakness" : [
+                                    "ghiaccio"
+                                ],
+                                "level" : 6,
+                                "max_frames" : 4,
+                                "weapons" : [
+                                    {
+                                        "class" : "Weapon",
+                                        "args" : {
+                                            "name" : "Spadone lungo",
+                                            "type" : "sword",
+                                            "damage" : 25,
+                                            "crit" : 45,
+                                            "max_frames" : 8
+                                        }
+                                    },
+                                    {
+                                        "class" : "Spell",
+                                        "args" : {
+                                            "name" : "Cura",
+                                            "type" : "cure",
+                                            "damage" : 0,
+                                            "mana" : 30,
+                                            "effect" : "cura"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "pos" : [256, 368],
+                        "rot" : "right"
+                    },
+                    {
+                        "type" : {
+                            "class" : "Enemy",
+                            "args" : {
+                                "name" : "Demone",
+                                "type" : "demon",
+                                "max_hp" : 150,
+                                "max_mana" : 40,
+                                "weakness" : [
+                                    "acqua"
+                                ],
+                                "level" : 7,
+                                "max_frames" : 4,
+                                "weapons" : [
+                                    {
+                                        "class" : "Weapon",
+                                        "args" : {
+                                            "name" : "Ascia pesante",
+                                            "type" : "axe",
+                                            "damage" : 25,
+                                            "crit" : 30,
+                                            "max_frames" : 4
+                                        }
+                                    },
+                                    {
+                                        "class" : "Spell",
+                                        "args" : {
+                                            "name" : "Palla di fuoco",
+                                            "type" : "fire",
+                                            "damage" : 30,
+                                            "mana" : 20,
+                                            "effect" : "fuoco"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "pos" : [32, 400],
+                        "rot" : "right"
+                    },
+                    {
+                        "type" : {
+                            "class" : "Enemy",
+                            "args" : {
+                                "name" : "Orco",
+                                "type" : "orc",
+                                "max_hp" : 120,
+                                "max_mana" : 30,
+                                "weakness" : [
+                                    "ghiaccio"
+                                ],
+                                "level" : 6,
+                                "max_frames" : 4,
+                                "weapons" : [
+                                    {
+                                        "class" : "Weapon",
+                                        "args" : {
+                                            "name" : "Spadone lungo",
+                                            "type" : "sword",
+                                            "damage" : 25,
+                                            "crit" : 45,
+                                            "max_frames" : 4
+                                        }
+                                    },
+                                    {
+                                        "class" : "Spell",
+                                        "args" : {
+                                            "name" : "Cura",
+                                            "type" : "cure",
+                                            "damage" : 0,
+                                            "mana" : 30,
+                                            "effect" : "cura"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "pos" : [80, 184],
+                        "rot" : "right"
+                    },
+                    {
+                        "type" : {
+                            "class" : "Enemy",
+                            "args" : {
+                                "name" : "Demone",
+                                "type" : "demon",
+                                "max_hp" : 150,
+                                "max_mana" : 40,
+                                "weakness" : [
+                                    "acqua"
+                                ],
+                                "level" : 7,
+                                "max_frames" : 4,
+                                "weapons" : [
+                                    {
+                                        "class" : "Weapon",
+                                        "args" : {
+                                            "name" : "Ascia pesante",
+                                            "type" : "axe",
+                                            "damage" : 25,
+                                            "crit" : 30,
+                                            "max_frames" : 4
+                                        }
+                                    },
+                                    {
+                                        "class" : "Spell",
+                                        "args" : {
+                                            "name" : "Palla di fuoco",
+                                            "type" : "fire",
+                                            "damage" : 30,
+                                            "mana" : 20,
+                                            "effect" : "fuoco"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "pos" : [192, 104],
                         "rot" : "right"
                     }
                 ],
@@ -619,21 +893,324 @@
                             "args" : {
                                 "has_collision" : true,
                                 "is_large" : true,
-                                "items" : [
+                                "item" : {
+                                    "class" : "PlayerSpell",
+                                    "args" : {
+                                        "name" : "+20HP",
+                                        "type" : "cure",
+                                        "damage" : 0,
+                                        "effect" : "cura",
+                                        "mana" : 30
+                                    }
+                                }
+                            }
+                        },
+                        "pos" : [256, 256]
+                    },
+                    {
+                        "type" : {
+                            "class" : "Chest",
+                            "args" : {
+                                "has_collision" : true,
+                                "is_large" : false,
+                                "item" : {
+                                    "class" : "PlayerWeapon",
+                                    "args" : {
+                                        "name" : "Arco lungo",
+                                        "type" : "bow",
+                                        "damage" : 45,
+                                        "crit" : 65,
+                                        "max_frames" : 5
+                                    }
+                                }
+                            }
+                        },
+                        "pos" : [472, 20]
+                    }
+                ]
+            }
+        },
+        {
+            "class" : "Level", 
+            "passed" : false,
+            "args" : {
+                "name" : "dungeon",
+                "music" : "dungeon",
+                "has_fog" : true,
+                "exit_point" : [480, 256],
+                "start_pos" : [256, 480],
+                "characters" : [
+                    {
+                        "type" : {
+                            "class" : "Enemy",
+                            "args" : {
+                                "name" : "Troll",
+                                "type" : "troll",
+                                "max_hp" : 120,
+                                "max_mana" : 0,
+                                "weakness" : [
+                                    "fuoco"
+                                ],
+                                "level" : 9,
+                                "max_frames" : 4,
+                                "weapons" : [
                                     {
-                                        "class" : "PlayerSpell",
+                                        "class" : "Weapon",
                                         "args" : {
-                                            "name" : "skibidi",
-                                            "type" : "ice",
-                                            "damage" : 100,
-                                            "effect" : "boppi",
-                                            "mana" : 10
+                                            "name" : "Machete",
+                                            "type" : "machete",
+                                            "damage" : 30,
+                                            "crit" : 20,
+                                            "max_frames" : 4
+                                        }
+                                    },
+                                    {
+                                        "class" : "Weapon",
+                                        "args" : {
+                                            "name" : "Spada leggera",
+                                            "type" : "sword",
+                                            "damage" : 30,
+                                            "crit" : 0,
+                                            "max_frames" : 8
+                                        }
+                                    },
+                                    {
+                                        "class" : "Weapon",
+                                        "args" : {
+                                            "name" : "Ascia pesante",
+                                            "type" : "axe",
+                                            "damage" : 25,
+                                            "crit" : 50,
+                                            "max_frames" : 4
                                         }
                                     }
                                 ]
                             }
                         },
-                        "pos" : [400, 400]
+                        "pos" : [376, 440],
+                        "rot" : "left"
+                    },
+                    {
+                        "type" : {
+                            "class" : "Enemy",
+                            "args" : {
+                                "name" : "Orco",
+                                "type" : "orc",
+                                "max_hp" : 150,
+                                "max_mana" : 40,
+                                "weakness" : [
+                                    "ghiaccio"
+                                ],
+                                "level" : 9,
+                                "max_frames" : 4,
+                                "weapons" : [
+                                    {
+                                        "class" : "Weapon",
+                                        "args" : {
+                                            "name" : "Spadone lungo",
+                                            "type" : "sword",
+                                            "damage" : 30,
+                                            "crit" : 45,
+                                            "max_frames" : 4
+                                        }
+                                    },
+                                    {
+                                        "class" : "Spell",
+                                        "args" : {
+                                            "name" : "Cura",
+                                            "type" : "cure",
+                                            "damage" : 0,
+                                            "mana" : 30,
+                                            "effect" : "cura"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "pos" : [160, 272],
+                        "rot" : "left"
+                    },
+                    {
+                        "type" : {
+                            "class" : "Enemy",
+                            "args" : {
+                                "name" : "Demone",
+                                "type" : "demon",
+                                "max_hp" : 150,
+                                "max_mana" : 60,
+                                "weakness" : [
+                                    "acqua"
+                                ],
+                                "level" : 9,
+                                "max_frames" : 4,
+                                "weapons" : [
+                                    {
+                                        "class" : "Weapon",
+                                        "args" : {
+                                            "name" : "Ascia pesante",
+                                            "type" : "axe",
+                                            "damage" : 25,
+                                            "crit" : 30,
+                                            "max_frames" : 4
+                                        }
+                                    },
+                                    {
+                                        "class" : "Spell",
+                                        "args" : {
+                                            "name" : "Palla di fuoco",
+                                            "type" : "fire",
+                                            "damage" : 30,
+                                            "mana" : 20,
+                                            "effect" : "fuoco"
+                                        }
+                                    },
+                                    {
+                                        "class" : "Spell",
+                                        "args" : {
+                                            "name" : "Sfera ghiacciata",
+                                            "type" : "ice",
+                                            "damage" : 35,
+                                            "mana" : 20,
+                                            "effect" : "ghiaccio"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "pos" : [80, 304],
+                        "rot" : "right"
+                    },
+                    {
+                        "type" : {
+                            "class" : "Enemy",
+                            "args" : {
+                                "name" : "Orco",
+                                "type" : "orc",
+                                "max_hp" : 120,
+                                "max_mana" : 50,
+                                "weakness" : [
+                                    "ghiaccio"
+                                ],
+                                "level" : 10,
+                                "max_frames" : 4,
+                                "weapons" : [
+                                    {
+                                        "class" : "Weapon",
+                                        "args" : {
+                                            "name" : "Spadone lungo",
+                                            "type" : "sword",
+                                            "damage" : 25,
+                                            "crit" : 50,
+                                            "max_frames" : 4
+                                        }
+                                    },
+                                    {
+                                        "class" : "Spell",
+                                        "args" : {
+                                            "name" : "Cura",
+                                            "type" : "cure",
+                                            "damage" : 0,
+                                            "mana" : 25,
+                                            "effect" : "cura"
+                                        }
+                                    },
+                                    {
+                                        "class" : "Spell",
+                                        "args" : {
+                                            "name" : "Palla di fuoco",
+                                            "type" : "fire",
+                                            "damage" : 40,
+                                            "mana" : 25,
+                                            "effect" : "cura"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "pos" : [104, 136],
+                        "rot" : "right"
+                    },
+                    {
+                        "type" : {
+                            "class" : "Enemy",
+                            "args" : {
+                                "name" : "Necromante",
+                                "type" : "necromancer",
+                                "max_hp" : 100,
+                                "max_mana" : 80,
+                                "weakness" : [
+                                    "aria"
+                                ],
+                                "level" : 6,
+                                "max_frames" : 4,
+                                "weapons" : [
+                                    {
+                                        "class" : "Spell",
+                                        "args" : {
+                                            "name" : "Magma infernale",
+                                            "type" : "fire",
+                                            "damage" : 35,
+                                            "mana" : 20,
+                                            "effect" : "fuoco"
+                                        }
+                                    },
+                                    {
+                                        "class" : "Spell",
+                                        "args" : {
+                                            "name" : "Tsunami",
+                                            "type" : "water",
+                                            "damage" : 35,
+                                            "mana" : 20,
+                                            "effect" : "acqua"
+                                        }
+                                    },
+                                    {
+                                        "class" : "Spell",
+                                        "args" : {
+                                            "name" : "Tornado",
+                                            "type" : "air",
+                                            "damage" : 35,
+                                            "mana" : 20,
+                                            "effect" : "aria"
+                                        }
+                                    },
+                                    {
+                                        "class" : "Spell",
+                                        "args" : {
+                                            "name" : "Cura",
+                                            "type" : "cure",
+                                            "damage" : 0,
+                                            "mana" : 20,
+                                            "effect" : "cura"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "pos" : [264, 72],
+                        "rot" : "left"
+                    }
+                ],
+                "objects" : [
+                    {
+                        "type" : {
+                            "class" : "Chest",
+                            "args" : {
+                                "has_collision" : true,
+                                "is_large" : true,
+                                "item" : {
+                                    "class" : "PlayerSpell",
+                                    "args" : {
+                                        "name" : "Saetta",
+                                        "type" : "lightning",
+                                        "damage" : 65,
+                                        "mana" : 45,
+                                        "effect" : "fulmine"
+                                    }
+                                }
+                            }
+                        },
+                        "pos" : [464, 308]
                     }
                 ]
             }
@@ -651,13 +1228,74 @@
                         "type" : {
                             "class" : "NPC",
                             "args" : {
-                                "name" : "Principessa di Pytopia",
+                                "name" : "Principessa della pyTerra",
                                 "type" : "princess",
                                 "max_frames" : 4,
                                 "dialogue" : "princess"
                             }
                         },
                         "pos" : [416, 240],
+                        "rot" : "left"
+                    },
+                    {
+                        "type" : {
+                            "class" : "Enemy",
+                            "args" : {
+                                "name" : "Dragone",
+                                "type" : "dragon",
+                                "max_hp" : 250,
+                                "max_mana" : 80,
+                                "sight_size" : [128, 128],
+                                "weakness" : [
+                                    "acqua"
+                                ],
+                                "level" : 20,
+                                "max_frames" : 4,
+                                "weapons" : [
+                                    {
+                                        "class" : "Weapon",
+                                        "args" : {
+                                            "name" : "Martello",
+                                            "type" : "hammer",
+                                            "damage" : 40,
+                                            "crit" : 15,
+                                            "max_frames" : 4
+                                        }
+                                    },
+                                    {
+                                        "class" : "Spell",
+                                        "args" : {
+                                            "name" : "Cura",
+                                            "type" : "cure",
+                                            "damage" : 0,
+                                            "mana" : 25,
+                                            "effect" : "cura"
+                                        }
+                                    },
+                                    {
+                                        "class" : "Spell",
+                                        "args" : {
+                                            "name" : "Palla di fuoco",
+                                            "type" : "fire",
+                                            "damage" : 40,
+                                            "mana" : 20,
+                                            "effect" : "fuoco"
+                                        }
+                                    },
+                                    {
+                                        "class" : "Spell",
+                                        "args" : {
+                                            "name" : "Tornado",
+                                            "type" : "air",
+                                            "damage" : 60,
+                                            "mana" : 40,
+                                            "effect" : "aria"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "pos" : [192, 256],
                         "rot" : "left"
                     }
                 ]

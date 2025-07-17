@@ -6,8 +6,6 @@ import pygame
 from config import X_RATIO, Y_RATIO, ASSETS_PATH
 import textboxes as tbx
 
-Rotation = Literal["left", "right"]
-
 class Weapon:
 	def __init__(
 		self, 
@@ -19,7 +17,7 @@ class Weapon:
 		frame_mult : int = 8,
 		scale_fact : int | float = 1,
 	) -> None:
-		self._name = name
+		self.name = name
 		self.type = type
 		self._scale_fact = (scale_fact*X_RATIO, scale_fact*Y_RATIO)
 		if isinstance(self, Spell):
@@ -113,8 +111,8 @@ class PlayerWeapon(Weapon):
 
 	def _setBox(self) -> None:
 		self.box = tbx.Box((128, 48))
-		self._name_text = tbx.Text(
-			f"{self._name}", align="center", font_size=9
+		self.name_text = tbx.Text(
+			f"{self.name}", align="center", font_size=9
 		)
 		self._dmg_text = tbx.Text(
 			f"Dmg: {self.damage}", align="center", font_size=9
@@ -130,7 +128,7 @@ class PlayerWeapon(Weapon):
 	) -> None:
 		self.box.show(screen, pos)
 		self._showStatic(screen, (pos[0] - 48, pos[1]))
-		self._name_text.show(screen, (pos[0]+8, pos[1] - 12))
+		self.name_text.show(screen, (pos[0]+8, pos[1] - 12))
 		self._dmg_text.show(screen, (pos[0]-16, pos[1]+8))
 		self.crit_text.show(screen, (pos[0]+32, pos[1]+8))
 		
@@ -144,7 +142,7 @@ class PlayerWeapon(Weapon):
 
 	def getData(self) -> dict:
 		data = {
-			"name" : self._name,
+			"name" : self.name,
 			"type" : self.type,
 			"damage" : self.damage,
 			"crit" : self.crit,
@@ -181,8 +179,8 @@ class PlayerSpell(Spell):
 
 	def _setBox(self) -> None:
 		self.box = tbx.Box((128, 48))
-		self._name_text = tbx.Text(
-			f"{self._name}", align="center", font_size=9
+		self.name_text = tbx.Text(
+			f"{self.name}", align="center", font_size=9
 		)
 		self._dmg_text = tbx.Text(
 			f"Dmg: {self.damage}", align="center", font_size=9
@@ -199,7 +197,7 @@ class PlayerSpell(Spell):
 	) -> None:
 		self.box.show(screen, pos)
 		self._showStatic(screen, (pos[0] - 48, pos[1]))
-		self._name_text.show(screen, (pos[0]+8, pos[1] - 12))
+		self.name_text.show(screen, (pos[0]+8, pos[1] - 12))
 		self._dmg_text.show(screen, (pos[0]-16, pos[1]+8))
 		self._mana_text.show(screen, (pos[0]+32, pos[1]+8))
 
@@ -213,7 +211,7 @@ class PlayerSpell(Spell):
 
 	def getData(self) -> dict:
 		data = {
-			"name" : self._name,
+			"name" : self.name,
 			"type" : self.type,
 			"damage" : self.damage,
 			"effect" : self.effect,
@@ -228,14 +226,4 @@ CLASSES = {
 	"PlayerSpell" : PlayerSpell,
 }
 
-# def main():
-# 	for spada in spade:
-# 		print(spade[spada], "\n")
-# 	for arco in archi:
-# 		print(archi[arco], "\n")
-# 	for inc in incantesimi:
-# 		print(incantesimi[inc], "\n")
-# 	return
-
-# if __name__ == "__main__":
-# 	main()
+NULL_ATTACK = Weapon("NULL", "null", 0, 0, 0)

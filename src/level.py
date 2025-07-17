@@ -17,9 +17,9 @@ MESSAGES = {
     "critico" : "Colpo critico!",
     "super" : "Colpo superefficace!",
     "morto" : "Sei morto! (premere INVIO)",
-    "nemico_rigenerato" : "Il nemico si è rigenerato",
-    "nemico_critico" : "Hai subito un colpo critico!",
-    "nemic_super" : "Hai subito un colpo superefficace",
+    "nemico_rigenerato" : "si è rigenerato",
+    "nemico_critico" : "è un colpo critico!",
+    "nemic_super" : "è superefficace!",
 }
 
 pygame.mixer.init()
@@ -268,6 +268,7 @@ class Level(PrimitiveLevel):
         player : pl.Player,
         enemy : ch.Enemy,
     ) -> tuple[wp.Weapon, int, bool]:
+        best_attack = wp.NULL_ATTACK
         best_damage = 0
         player_is_weak = False
         level_factor = 1 + (0.25 * ((enemy.level - player.level) // 5))
@@ -426,14 +427,15 @@ class Level(PrimitiveLevel):
                     SFX["attack"].play()
                     player_inflicted = True
                 message = (
-                    MESSAGES["morto"] if player.is_dead else (
+                    f"{enemy.name} ha usato {enemy_attack.name}, " 
+                    + (MESSAGES["morto"] if player.is_dead else (
                         MESSAGES["nemico_rigenerato"] if enemy_attack.type == "cure" else (
                             MESSAGES["nemico_critico"] if enemy_attack.critical else (
                                 MESSAGES["nemic_super"] if player_is_weak else ""
                             )
                         )
                     )
-                )
+                ))
 
             if keys[pygame.K_RETURN]:
                 if enemy.is_dead:
@@ -549,7 +551,7 @@ class Level(PrimitiveLevel):
 
             for character in self._characters:
                 if (character["type"].has_collision
-                    and player.rect.colliderect(character["type"].rect)
+                    and player.rect.colliderect(character["type"].collision_rect)
                 ):
                     if character["type"].is_hostile:
                         player_last_pos = player.rect.center
@@ -571,8 +573,9 @@ class Level(PrimitiveLevel):
                 if (object["type"].has_collision 
                     and player.rect.colliderect(object["type"].rect)
                 ):
-                    player.addItems(object["type"].items)
-                    object["type"].collision()
+                    if object["type"].has_item:
+                        player.addItem(object["type"].item)
+                    object["type"].collision(screen)
                     SFX["chest"].play()
             
             if self._has_fog:

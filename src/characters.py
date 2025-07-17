@@ -30,7 +30,7 @@ class Character:
 		self.is_hostile = is_hostile
 		self.collision_type = ""
 		self._setSprites()
-		self.rect = self._static_right.get_rect()
+		self.collision_rect = self.rect = self._static_right.get_rect()
 		self._name_box = tbx.TextBox(
 			f"{self.name}",
 			align = "center",
@@ -126,7 +126,7 @@ class Character:
 			self._current_rot = self._static_right
 		else:
 			self._current_rot = self._static_left
-		self.rect.center = pos
+		self.collision_rect.center = self.rect.center = pos
 		screen.blit(self._current_rot, self.rect)
 		
 	def idle(
@@ -188,7 +188,7 @@ class Enemy(Character):
 			scale_fact, has_collision, is_hostile, dialogue
 		)
 		if sight_size is not None:
-			self.rect.inflate_ip(sight_size[0]*X_RATIO, sight_size[1]*Y_RATIO)
+			self.collision_rect = self.rect.inflate(sight_size[0]*X_RATIO, sight_size[1]*Y_RATIO)
 		self.level = level
 		self.max_hp = self.hp = max_hp
 		self.max_mana = self.mana = max_mana
