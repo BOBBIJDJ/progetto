@@ -6,7 +6,6 @@ import pygame
 
 from config import X_RATIO, Y_RATIO, MAX_RATIO, ASSETS_PATH
 import characters as ch
-import objects as obj
 import textboxes as tbx
 import weapons as wp
 

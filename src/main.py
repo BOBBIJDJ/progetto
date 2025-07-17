@@ -2,7 +2,7 @@
 
 import pygame
 
-from config import SIZE, saveState, ASSETS_PATH
+from config import SIZE, saveState
 import player as pl
 import level as lv
 

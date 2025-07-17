@@ -20,6 +20,7 @@
                                 "max_hp" : 150,
                                 "max_mana" : 25,
                                 "hp_mult" : 2,
+                                "level" : 1,
                                 "mana_mult" : 0.5,
                                 "max_frames" : 4,
                                 "weakness" : [
@@ -51,6 +52,7 @@
                                 "max_hp" : 100,
                                 "max_mana" : 60,
                                 "hp_mult" : 1,
+                                "level" : 1,
                                 "mana_mult" : 3,
                                 "max_frames" : 4,
                                 "weakness" : [
@@ -1210,7 +1212,7 @@
                                 }
                             }
                         },
-                        "pos" : [464, 308]
+                        "pos" : [408, 440]
                     }
                 ]
             }

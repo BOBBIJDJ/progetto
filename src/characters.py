@@ -1,11 +1,9 @@
-import copy
 from typing import Literal
 
 import pygame
 
 from config import X_RATIO, Y_RATIO, ASSETS_PATH
 import weapons as wp
-import objects as obj
 import textboxes as tbx
 
 class Character:

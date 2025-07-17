@@ -17,9 +17,9 @@ MESSAGES = {
     "critico" : "Colpo critico!",
     "super" : "Colpo superefficace!",
     "morto" : "Sei morto! (premere INVIO)",
-    "nemico_rigenerato" : "si è rigenerato",
-    "nemico_critico" : "è un colpo critico!",
-    "nemic_super" : "è superefficace!",
+    "nemico_rigenerato" : "si e' rigenerato",
+    "nemico_critico" : "e' un colpo critico!",
+    "nemic_super" : "e' superefficace!",
 }
 
 pygame.mixer.init()
