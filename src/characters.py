@@ -159,9 +159,6 @@ class NPC(Character):
 			scale_fact, has_collision, is_hostile, dialogue	
 		)
 
-	# def giveItem(self, player, item):
-	# 	player.items.append()
-		
 class Enemy(Character):
 	def __init__(
 		self, 
@@ -206,7 +203,6 @@ class Enemy(Character):
 		    f"lv. {self.level}",
 		    align = "center",
 		)
-		# self.setAttackAnimations()
 
 	def getDamage(
 		self,
@@ -222,12 +218,6 @@ class Enemy(Character):
 	def cure(self) -> None:
 		new_hp = round(self.hp + (self.max_hp * 0.2)) 
 		self.hp = min(new_hp, self.max_hp)
-
-	# def setAttackAnimations(self):
-	# 	self.attack_anim = []
-	# 	for i in range(self.max_frames):
-	# 		self.attack_anim.append(pygame.image.load(f"{self.path}/attack/{i}.png"))
-	# 		self.attack_anim[i] = pygame.transform.scale_by(self.attack_anim[i], self.scale_fact)
 			
 class Subplayer(Character):
 	def __init__(

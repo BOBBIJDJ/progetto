@@ -114,8 +114,6 @@ class TextBox(Text):
         self.rect.center = (pos[0]*X_RATIO, pos[1]*Y_RATIO)
         screen.blit(self._surface, self.rect)
 
-# test_dialogue = TextBox("window", "testo0", (300, 100))
-
 CLASSES = {
     "TextBox" : TextBox,
     "Box" : Box,

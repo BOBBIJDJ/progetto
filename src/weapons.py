@@ -87,14 +87,6 @@ class Weapon:
 			self.critical = False
 		return damage
 
-	# def setPos(
-	# 	self, 
-	# 	screen : pygame.Surface, 
-	# 	pos : tuple[int, int],
-	# ) -> None:
-	# 	self._rect.center = (pos[0]*X_RATIO, pos[1]*Y_RATIO)
-	# 	screen.blit(self._static, self._rect)
-
 class PlayerWeapon(Weapon):
 	def __init__(
 		self, 

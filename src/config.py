@@ -38,7 +38,6 @@ except FileNotFoundError:
 WIDTH = config_data["size"]["width"]
 HEIGHT = config_data["size"]["height"]
 SIZE = (WIDTH, HEIGHT)
-MIN_RATIO = (min(WIDTH, HEIGHT))/512
 MAX_RATIO = (max(WIDTH, HEIGHT))/512
 X_RATIO = WIDTH/512
 Y_RATIO = HEIGHT/512
